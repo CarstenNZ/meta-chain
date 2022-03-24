@@ -17,6 +17,7 @@ class Transaction(ChainData):
 
 class Block(ChainData):
     def __init__(self, block_dict):
+        self.number = ""
         self.transactions = []
         super().__init__(block_dict)
 

@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 from chainmodel.base import Block
 
 
-class DbCache(ABC):
+class Cache(ABC):
     @abstractmethod
-    def get_block(self, block_number):
+    def get_block(self, block_number: str):
         pass
 
     @abstractmethod

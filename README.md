@@ -1,2 +1,2 @@
 # meta-chain
-uniform Etherum data model and access layer
+uniform Ethereum data model and access layer

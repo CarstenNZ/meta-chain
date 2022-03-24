@@ -1,7 +1,7 @@
-from typing import Optional, Sequence, Dict
+from typing import Optional, Sequence
 
-from cache.base import DbCache
-from chainmodel.base import Block
+from cache.base import Cache
+from cache.memcache import MemCache
 from datasource.base import DataSource
 
 
@@ -11,50 +11,35 @@ class Loader:
           will exist for each distinct chain object
     """
 
-    def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[DbCache] = None):
-        self.db_cache = db_cache
+    def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[Cache] = None):
         self.data_sources = tuple(data_sources)
-
-        self._blocks: Dict[str, Block] = {}
+        self.caches = [MemCache()] + ([db_cache] if db_cache else [])
 
     def close(self):
         """ only useful for testing """
-        if self.db_cache:
-            self.db_cache.close()
-            self.db_cache = None
-
+        [c.close() for c in self. caches]
         [ds.close() for ds in self.data_sources]
-        self.data_sources = []
+        self.caches = self.data_sources = ()
 
     def get_block(self, block_number):
-        def add_memCache():
-            self._blocks[block.number] = block
+        def update_cache(hit_cache):
+            for outer_cache in self.caches:
+                if outer_cache != hit_cache:
+                    outer_cache.add_block(block)
+
             return block
         # <def
 
-        # mem cache
-        block = self._blocks.get(block_number)
-        if block:
-            return block
-
-        # DB cache
-        if self.db_cache:
-            block = self.db_cache.get_block(block_number)
+        # check caches
+        for cache in self.caches:
+            block = cache.get_block(block_number)
             if block:
-                return add_memCache()
+                return update_cache(cache)
 
         # from data sources
         for ds in self.data_sources:
             block = ds.get_block(block_number)
             if block:
-                break
+                return update_cache(None)
 
-        if not block:
-            return None
-
-        # write to DB cache
-        if self.db_cache:
-            self.db_cache.add_block(block)
-
-        return add_memCache()
-
+        return None
