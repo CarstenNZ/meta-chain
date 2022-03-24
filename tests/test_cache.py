@@ -2,6 +2,7 @@ import os
 import unittest
 
 from cache.shelve import ShelveCache
+from chainmodel.base import Transaction
 from tests.test_chainmodel import TestChainModel
 
 
@@ -18,5 +19,7 @@ class TestShelveCache(unittest.TestCase):
 
         os.remove(dbPath)
 
-        assert block.hash == cache_block.hash
-
+        self.assertTrue(id(block) != id(cache_block))
+        self.assertTrue(block.hash == cache_block.hash)
+        self.assertTrue(isinstance(block.transactions[2], Transaction))
+        self.assertTrue(block.transactions[2].hash == cache_block.transactions[2].hash)

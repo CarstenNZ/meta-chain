@@ -2,17 +2,18 @@ from typing import Dict
 
 import requests
 
+from chainmodel.base import Block
+from datasource.base import DataSource
 
-class EtherscanIo:
+
+class EtherscanIo(DataSource):
     def __init__(self, service_endpoint, api_key):
         self.service_endpoint = service_endpoint
         self.api_key = api_key
         self.session = requests.Session()
 
-    def close(self):
-        if self.session:
-            self.session.close()
-            self.session = None
+    def loadBlock(self, block_number: str):
+        return Block(self.get('proxy', 'eth_getBlockByNumber', tag=block_number, boolean='true'))
 
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict
@@ -26,6 +27,11 @@ class EtherscanIo:
                 return jContent['result']
 
         raise Exception(f"http request '{url}' failed with {resp.status_code}/'{resp.text}'")
+
+    def close(self):
+        if self.session:
+            self.session.close()
+            self.session = None
 
     def __del__(self):
         self.close()

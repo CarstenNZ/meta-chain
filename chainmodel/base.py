@@ -16,6 +16,10 @@ class Transaction(ChainData):
 
 
 class Block(ChainData):
+    def __init__(self, block_dict):
+        self.transactions = []
+        super().__init__(block_dict)
+
     def _transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])
 
