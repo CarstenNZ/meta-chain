@@ -2,14 +2,11 @@ import shelve
 from pathlib import Path
 
 from chainmodel.base import Block
-
-
-class Cache:
-    pass
+from cache.base import DbCache
 
 
 # noinspection PyUnresolvedReferences
-class ShelveCache(Cache):
+class ShelveCache(DbCache):
     def __init__(self, file_path, clear=False):
         if clear:
             Path(file_path).unlink(missing_ok=True)

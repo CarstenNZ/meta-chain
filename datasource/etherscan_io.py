@@ -12,7 +12,7 @@ class EtherscanIo(DataSource):
         self.api_key = api_key
         self.session = requests.Session()
 
-    def loadBlock(self, block_number: str):
+    def get_block(self, block_number: str):
         return Block(self.get('proxy', 'eth_getBlockByNumber', tag=block_number, boolean='true'))
 
     def get(self, module, action, **kwargs) -> Dict:
