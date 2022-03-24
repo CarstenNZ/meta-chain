@@ -9,6 +9,11 @@ class EtherscanIo:
         self.api_key = api_key
         self.session = requests.Session()
 
+    def close(self):
+        if self.session:
+            self.session.close()
+            self.session = None
+
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict
         """
@@ -23,4 +28,4 @@ class EtherscanIo:
         raise Exception(f"http request '{url}' failed with {resp.status_code}/'{resp.text}'")
 
     def __del__(self):
-        self.session.close()
+        self.close()
