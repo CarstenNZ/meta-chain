@@ -1,0 +1,4 @@
+datasource:
+    etherscan.io:
+        api_endpoint: 'https://api.etherscan.io/api'
+        api_key: '<get your own api key here https://etherscan.io>'
