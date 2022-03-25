@@ -23,9 +23,11 @@ class Loader:
 
     def get_block(self, block_number):
         def update_cache(hit_cache):
-            for outer_cache in self.caches:
-                if outer_cache != hit_cache:
-                    outer_cache.add_block(block)
+            for inner_cache in self.caches:
+                if inner_cache == hit_cache:
+                    return block
+
+                inner_cache.add_block(block)
 
             return block
         # <def
