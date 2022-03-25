@@ -4,6 +4,7 @@ import requests
 
 from chainmodel.base import Block
 from datasource.base import DataSource
+from std_format import Hex
 
 
 class EtherscanIo(DataSource):
@@ -13,6 +14,7 @@ class EtherscanIo(DataSource):
         self.session = requests.Session()
 
     def get_block(self, block_number: str):
+        block_number = Hex.fmt(block_number)
         return Block(self.get('proxy', 'eth_getBlockByNumber', tag=block_number, boolean='true'))
 
     def get(self, module, action, **kwargs) -> Dict:

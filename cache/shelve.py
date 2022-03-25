@@ -1,6 +1,7 @@
 import shelve
 from pathlib import Path
 
+from std_format import Hex
 from chainmodel.base import Block
 from cache.base import Cache
 
@@ -14,11 +15,10 @@ class ShelveCache(Cache):
         self._shelve = shelve.open(file_path)
 
     def add_block(self, block: Block):
-        self._shelve['b' + block.number] = block
+        self._shelve['b' + Hex.fmt(block.number)] = block
 
     def get_block(self, block_number):
-        assert block_number.startswith('0x')
-        return self._shelve.get('b' + block_number)
+        return self._shelve.get('b' + Hex.fmt(block_number))
 
     def close(self):
         if self._shelve:

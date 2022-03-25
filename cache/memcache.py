@@ -1,3 +1,4 @@
+from std_format import Hex
 from cache.base import Cache
 from chainmodel.base import Block
 
@@ -8,12 +9,10 @@ class MemCache(Cache):
         self._blocks = {}
 
     def add_block(self, block: Block):
-        assert block.number.startswith('0x')
-        self._blocks[block.number] = block
+        self._blocks[Hex.fmt(block.number)] = block
 
     def get_block(self, block_number):
-        assert block_number.startswith('0x')
-        return self._blocks.get(block_number)
+        return self._blocks.get(Hex.fmt(block_number))
 
     def close(self):
         pass
