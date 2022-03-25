@@ -21,6 +21,9 @@ class Config:
         esNode = self.get('datasource', 'etherscan.io')
         return esNode['api_endpoint'], esNode['api_key']
 
+    def get_web3_endpoint(self):
+        return self.get('datasource', 'web3', 'api_endpoint')
+
     def get(self, *path, default=None):
         """ extract value at the end of path
             - returns default if path doesn't exist

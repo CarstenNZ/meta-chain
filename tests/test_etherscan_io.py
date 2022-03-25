@@ -16,11 +16,11 @@ class TestEtherscanIo(unittest.TestCase):
     def tearDownClass(cls):
         cls.eio.close()
 
-    def test_basicRequest(self):
+    def test_directRequest(self):
         res = self.eio.get('stats', 'ethprice')
         assert {'ethbtc', 'ethusd'}.issubset(res.keys())
 
     def test_blockRequest(self):
-        res = self.eio.get('proxy', 'eth_getBlockByNumber', tag='0x123456', boolean='true')
-        assert res['extraData'] == '0xd783010305844765746887676f312e352e31856c696e7578'
+        block = self.eio.get_block('0x123456')
+        assert block.extraData == '0xd783010305844765746887676f312e352e31856c696e7578'
 

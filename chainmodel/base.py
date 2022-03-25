@@ -1,6 +1,12 @@
+from hexbytes import HexBytes
+from std_format import Hex
+
 
 class ChainData:
-    AttrHandler = {}
+    _AttrHandlers = {}
+    _TypeConverter = {
+        HexBytes: lambda hb: Hex.fmt(hb.hex())
+    }
 
     def __init__(self, block_dict):
         """ generic init crates instance attributes from dict items
@@ -8,7 +14,19 @@ class ChainData:
               from the 'transaction' item
         """
         for k, v in block_dict.items():
-            self.__class__.AttrHandler.get(k, setattr)(self, k, v)
+            # noinspection PyArgumentList
+            self.__class__._AttrHandlers.get(k, self.__class__.attr_default_handler)(self, k, v)
+
+    def attr_default_handler(self, key, value):
+        """ removes all special types, e.g. HexBytes from web3
+        """
+        if not isinstance(value, (int, str, list)):         # special type
+            value = self._TypeConverter[type(value)](value)
+
+        elif type(value) is str and Hex.isHexStr(value):    # std format for hex strings
+            value = Hex.fmt(value)
+
+        setattr(self, key, value)
 
 
 class Transaction(ChainData):
@@ -24,4 +42,4 @@ class Block(ChainData):
     def _transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])
 
-    AttrHandler = {'transactions': _transactions}
+    _AttrHandlers = {'transactions': _transactions}
