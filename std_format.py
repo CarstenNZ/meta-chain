@@ -2,7 +2,7 @@ import re
 
 
 class Hex:
-    Hex_regex = re.compile('(?:0[xX])([0-9a-fA-F]+)')
+    Hex_regex = re.compile('0[xX]([0-9a-fA-F]+)')
 
     @staticmethod
     def isHexStr(hex_str):
