@@ -1,3 +1,5 @@
+from typing import List
+
 import yaml
 from hexbytes import HexBytes
 from std_format import Hex
@@ -21,7 +23,7 @@ class ChainData(yaml.YAMLObject):
     def attr_default_handler(self, key, value):
         """ removes all special types, e.g. HexBytes from web3
         """
-        if not isinstance(value, (int, str, list, type(None))):         # special type
+        if not isinstance(value, (int, str, list, type(None))):     # special type
             value = self._TypeConverter[type(value)](value)
 
         elif type(value) is str and Hex.isHexStr(value):    # std format for hex strings
@@ -42,8 +44,9 @@ class Transaction(ChainData):
     yaml_tag = '!Transaction'
 
     def __init__(self, data_dict):
-        self.blockNumber = None
-        self.transactionIndex = None
+        self.hash = ''
+        self.blockNumber = -1
+        self.transactionIndex = -1
         super().__init__(data_dict)
 
     def __str__(self):
@@ -66,7 +69,7 @@ class Block(ChainData):
     yaml_tag = '!Block'
 
     def __init__(self, data_dict):
-        self.transactions = []
+        self.transactions: List[Transaction] = []
         super().__init__(data_dict)
 
         # noinspection PyUnresolvedReferences

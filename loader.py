@@ -2,7 +2,7 @@ from typing import Optional, Sequence
 
 from cache.base import Cache
 from cache.memcache import MemCache
-from chainmodel.base import Receipt
+from chainmodel.base import Receipt, Block
 from datasource.base import DataSource
 
 
@@ -23,7 +23,7 @@ class Loader:
         [ds.close() for ds in self.data_sources]
         self.caches = self.data_sources = ()
 
-    def get_block(self, block_number: int):
+    def get_block(self, block_number: int) -> Block:
         return self.__get('block', block_number)
 
     def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
