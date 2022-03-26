@@ -24,7 +24,7 @@ def main():
     assert id(block1) == id(block2)
 
     # pretty output
-    print(block1.pretty_str())
+    print(block1.pretty())
 
 
 if __name__ == '__main__':

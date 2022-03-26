@@ -1,10 +1,9 @@
-import pprint
-
+import yaml
 from hexbytes import HexBytes
 from std_format import Hex
 
 
-class ChainData:
+class ChainData(yaml.YAMLObject):
     _AttrHandlers = {}
     _TypeConverter = {
         HexBytes: lambda hb: Hex.fmt(hb.hex())
@@ -30,28 +29,30 @@ class ChainData:
 
         setattr(self, key, value)
 
-    def pretty_str(self):
-        """ return pretty formatted ChainData, multiline!
+    def pretty(self):
+        """ return pretty formatted ChainData, multiline! yaml
         """
-        ps = pprint.pformat(self.__dict__, indent=2, width=120)
-        return f"{self}\n{ps}"
+        return yaml.dump(self, indent=4)
 
     def __str__(self):
         return f"<{self.__class__.__name__}>"
 
 
 class Transaction(ChainData):
+    yaml_tag = '!Transaction'
+
     def __init__(self, block_dict):
         self.blockNumber = None
         self.transactionIndex = None
         super().__init__(block_dict)
 
-    def __repr__(self):
-        """ ! used by .pretty_str() """
+    def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
 
 
 class Block(ChainData):
+    yaml_tag = '!Block'
+
     def __init__(self, block_dict):
         self.number = ""
         self.transactions = []
