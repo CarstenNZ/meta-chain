@@ -1,5 +1,5 @@
 
-from cache.shelve import ShelveCache
+from cache.shelvecache import ShelveCache
 from config import Config
 # from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
@@ -35,4 +35,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

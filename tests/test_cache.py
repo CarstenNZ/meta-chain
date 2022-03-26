@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from cache.shelve import ShelveCache
+from cache.shelvecache import ShelveCache
 from chainmodel.base import Transaction
 from config import Config
 from tests.test_chainmodel import TestChainModel
