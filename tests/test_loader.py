@@ -7,18 +7,26 @@ from loader import Loader
 
 
 class TestLoader(unittest.TestCase):
+    dbPath = '/tmp/test.shelve'
+    loader = None
+
+    @classmethod
+    def setUpClass(cls):
+        config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
+        cache = ShelveCache(None, explicit_path=cls.dbPath, clear=True)
+        eio = EtherscanIo(config)
+        cls.loader = Loader([eio], cache)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.loader.close()
 
     def test_basicLoaderTest(self):
-        dbPath = '/tmp/test.shelve'
-        config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
-        loader = Loader([EtherscanIo(config)], ShelveCache(None, explicit_path=dbPath, clear=True))
-
-        block1 = loader.get_block('0x123456')   # from data source
-        block2 = loader.get_block('0x123456')   # from mem cache
+        block1 = self.loader.get_block('0x123456')   # from data source
+        block2 = self.loader.get_block('0x123456')   # from mem cache
         self.assertTrue(id(block1) == id(block2))
 
-        # new loader with same DB will load from DB, but the block will be a different instance
-        loader.close()
-        loader = Loader([EtherscanIo(config)], ShelveCache(None, explicit_path=dbPath))
-        block3 = loader.get_block('0x123456')   # from DB
-        self.assertTrue(id(block3) != id(block2))
+    def test_getReceipt(self):
+        receipt = self.loader.get_transaction_receipt(
+            '0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391')
+        assert receipt.blockHash == '0xb5e7f8b71f2ea15f001634a9f7657cd35d29898d56de57663de0e7ebc15b7b54'

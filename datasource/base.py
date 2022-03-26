@@ -10,5 +10,9 @@ class DataSource(ABC):
         pass
 
     @abstractmethod
+    def get_transaction_receipt(self, transaction_hash):
+        pass
+
+    @abstractmethod
     def close(self):
         pass

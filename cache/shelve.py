@@ -2,10 +2,10 @@ import shelve
 from pathlib import Path
 from typing import Optional
 
+from cache.base import Cache
+from chainmodel.base import Block, Receipt
 from config import Config
 from std_format import Hex
-from chainmodel.base import Block
-from cache.base import Cache
 
 
 # noinspection PyUnresolvedReferences
@@ -27,6 +27,12 @@ class ShelveCache(Cache):
 
     def get_block(self, block_number):
         return self._shelve.get('b' + Hex.fmt(block_number))
+
+    def add_transaction_receipt(self, receipt: Receipt):
+        self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt
+
+    def get_transaction_receipt(self, transaction_hash):
+        return self._shelve.get('r' + Hex.fmt(transaction_hash))
 
     def close(self):
         if self._shelve:

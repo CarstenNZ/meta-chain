@@ -9,19 +9,19 @@ class ChainData(yaml.YAMLObject):
         HexBytes: lambda hb: Hex.fmt(hb.hex())
     }
 
-    def __init__(self, block_dict):
+    def __init__(self, data_dict):
         """ generic init crates instance attributes from dict items
             - 'Handler' class variable in derived classes can override this handling, e.g. create Transaction instances
               from the 'transaction' item
         """
-        for k, v in block_dict.items():
+        for k, v in data_dict.items():
             # noinspection PyArgumentList
             self.__class__._AttrHandlers.get(k, self.__class__.attr_default_handler)(self, k, v)
 
     def attr_default_handler(self, key, value):
         """ removes all special types, e.g. HexBytes from web3
         """
-        if not isinstance(value, (int, str, list)):         # special type
+        if not isinstance(value, (int, str, list, type(None))):         # special type
             value = self._TypeConverter[type(value)](value)
 
         elif type(value) is str and Hex.isHexStr(value):    # std format for hex strings
@@ -41,22 +41,34 @@ class ChainData(yaml.YAMLObject):
 class Transaction(ChainData):
     yaml_tag = '!Transaction'
 
-    def __init__(self, block_dict):
+    def __init__(self, data_dict):
         self.blockNumber = None
         self.transactionIndex = None
-        super().__init__(block_dict)
+        super().__init__(data_dict)
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
 
 
+class Receipt(ChainData):
+    yaml_tag = '!Receipt'
+
+    def __init__(self, data_dict):
+        self.blockHash = None
+        self.transactionHash = None
+        super().__init__(data_dict)
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} #{self.transactionHash}>"
+
+
 class Block(ChainData):
     yaml_tag = '!Block'
 
-    def __init__(self, block_dict):
+    def __init__(self, data_dict):
         self.number = ""
         self.transactions = []
-        super().__init__(block_dict)
+        super().__init__(data_dict)
 
     def _transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])

@@ -1,17 +1,17 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-from chainmodel.base import Block
+from chainmodel.base import Block, Receipt
+from datasource.base import DataSource
 
 
-class Cache(ABC):
-    @abstractmethod
-    def get_block(self, block_number: str):
-        pass
+class Cache(DataSource):
+    """ Cache is just a data source, but also needs add_... methods
+    """
 
     @abstractmethod
     def add_block(self, block: Block):
         pass
 
     @abstractmethod
-    def close(self):
+    def add_transaction_receipt(self, receipt: Receipt):
         pass

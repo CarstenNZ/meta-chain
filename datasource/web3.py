@@ -19,6 +19,10 @@ class WebThree(DataSource):
         block_number = Hex.fmt(block_number)
         return Block(self.w3.eth.get_block(cast(HexStr, block_number), full_transactions=True))
 
+    def get_transaction_receipt(self, transaction_hash):
+        breakpoint()
+        # return Receipt(self.get('proxy', 'eth_getTransactionReceipt', txhash=txhash))
+
     def close(self):
         del self.w3
         self.w3 = None

@@ -2,6 +2,7 @@ from typing import Optional, Sequence
 
 from cache.base import Cache
 from cache.memcache import MemCache
+from chainmodel.base import Receipt
 from datasource.base import DataSource
 
 
@@ -22,26 +23,37 @@ class Loader:
         self.caches = self.data_sources = ()
 
     def get_block(self, block_number):
+        return self.__get('block', block_number)
+
+    def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
+        return self.__get('transaction_receipt', txhash)
+
+    def __get(self, attrib, arg):
+        """ generic cache and data source access method """
         def update_cache(hit_cache):
             for inner_cache in self.caches:
                 if inner_cache == hit_cache:
-                    return block
+                    return obj
 
-                inner_cache.add_block(block)
+                getattr(inner_cache, adder)(obj)
 
-            return block
+            return obj
         # <def
+
+        getter = 'get_' + attrib
+        adder = 'add_' + attrib
 
         # check caches
         for cache in self.caches:
-            block = cache.get_block(block_number)
-            if block:
+            obj = getattr(cache, getter)(arg)
+            if obj:
                 return update_cache(cache)
 
         # from data sources
         for ds in self.data_sources:
-            block = ds.get_block(block_number)
-            if block:
+            obj = getattr(ds, getter)(arg)
+            if obj:
                 return update_cache(None)
 
         return None
+
