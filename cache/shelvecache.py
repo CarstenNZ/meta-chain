@@ -26,13 +26,25 @@ class ShelveCache(Cache):
         self._shelve[f'b{block.number}'] = block_src
 
     def get_block(self, block_number: int):
-        return self._shelve.get(f'b{block_number}')
+        block_src = self._shelve.get(f'b{block_number}')
+        if block_src is None:
+            return None, None
+
+        # noinspection PyTypeChecker
+        block_src = dict(block_src)
+        return Block(block_src), block_src
 
     def add_transaction_receipt(self, receipt: Receipt, receipt_src: str):
         self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt_src
 
     def get_transaction_receipt(self, transaction_hash):
-        return self._shelve.get('r' + Hex.fmt(transaction_hash))
+        receipt_src = self._shelve.get('r' + Hex.fmt(transaction_hash))
+        if receipt_src is None:
+            return None, None
+
+        # noinspection PyTypeChecker
+        receipt_src = dict(receipt_src)
+        return Receipt(receipt_src), receipt_src
 
     def close(self):
         if self._shelve:

@@ -2,7 +2,7 @@ import os
 import unittest
 
 from cache.shelvecache import ShelveCache
-from chainmodel.base import Transaction, Block
+from chainmodel.base import Transaction
 from config import Config
 from tests.test_chainmodel import TestChainModel
 
@@ -16,7 +16,7 @@ class TestShelveCache(unittest.TestCase):
             db.add_block(block, block_src)
 
         with ShelveCache(config) as db:
-            cache_block = Block(db.get_block(block.number))
+            cache_block, _ = db.get_block(block.number)
 
         os.remove(config.get_cache_path())
 

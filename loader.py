@@ -47,7 +47,7 @@ class Loader:
 
         # check caches
         for cache in self.caches:
-            obj = getattr(cache, getter)(arg)
+            obj, obj_src = getattr(cache, getter)(arg)
             if obj:
                 return update_cache(cache)
 

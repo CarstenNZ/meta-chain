@@ -63,12 +63,11 @@ class Receipt(ChainData):
 
 
 class Block(ChainData):
+    # noinspection PyUnresolvedReferences
     def __init__(self, data_dict):
+        self.number = -1
         self.transactions: List[Transaction] = []
         super().__init__(data_dict)
-
-        # noinspection PyUnresolvedReferences
-        self.number: int = self.number if isinstance(self.number, int) else int(self.number, 0)
 
     def _init_transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])
