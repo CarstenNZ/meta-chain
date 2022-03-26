@@ -30,7 +30,7 @@ class Loader:
         return self.__get('transaction_receipt', txhash)
 
     def __get(self, attrib, arg):
-        """ generic cache and data source access method
+        """ generic cache and data-source access method
         """
         def update_cache(hit_cache):
             for inner_cache in self.caches:

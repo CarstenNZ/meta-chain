@@ -41,8 +41,6 @@ class ChainData(yaml.YAMLObject):
 
 
 class Transaction(ChainData):
-    yaml_tag = '!Transaction'
-
     def __init__(self, data_dict):
         self.hash = ''
         self.blockNumber = -1
@@ -54,8 +52,6 @@ class Transaction(ChainData):
 
 
 class Receipt(ChainData):
-    yaml_tag = '!Receipt'
-
     def __init__(self, data_dict):
         self.blockHash = None
         self.transactionHash = None
@@ -66,8 +62,6 @@ class Receipt(ChainData):
 
 
 class Block(ChainData):
-    yaml_tag = '!Block'
-
     def __init__(self, data_dict):
         self.transactions: List[Transaction] = []
         super().__init__(data_dict)
