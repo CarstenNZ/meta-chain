@@ -1,3 +1,5 @@
+import pprint
+
 from hexbytes import HexBytes
 from std_format import Hex
 
@@ -28,9 +30,25 @@ class ChainData:
 
         setattr(self, key, value)
 
+    def pretty_str(self):
+        """ return pretty formatted ChainData, multiline!
+        """
+        ps = pprint.pformat(self.__dict__, indent=2, width=120)
+        return f"{self}\n{ps}"
+
+    def __str__(self):
+        return f"<{self.__class__.__name__}>"
+
 
 class Transaction(ChainData):
-    pass
+    def __init__(self, block_dict):
+        self.blockNumber = None
+        self.transactionIndex = None
+        super().__init__(block_dict)
+
+    def __repr__(self):
+        """ ! used by .pretty_str() """
+        return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
 
 
 class Block(ChainData):
@@ -41,5 +59,8 @@ class Block(ChainData):
 
     def _transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} #{self.number}>"
 
     _AttrHandlers = {'transactions': _transactions}
