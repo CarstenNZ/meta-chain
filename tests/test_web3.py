@@ -9,7 +9,7 @@ class TestWeb3(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        endpoint = Config(['~/meta-chain.yaml', '../meta-chain.yaml']).get_web3_endpoint()
+        endpoint = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml']).get_web3_endpoint()
         cls.w3 = WebThree(endpoint)
 
     @classmethod

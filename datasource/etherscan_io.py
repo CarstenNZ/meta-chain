@@ -3,14 +3,17 @@ from typing import Dict
 import requests
 
 from chainmodel.base import Block
+from config import Config
 from datasource.base import DataSource
 from std_format import Hex
 
 
 class EtherscanIo(DataSource):
-    def __init__(self, service_endpoint, api_key):
-        self.service_endpoint = service_endpoint
-        self.api_key = api_key
+    def __init__(self, config: Config):
+        endpoint, key = config.get_etherscanIo_service()
+
+        self.service_endpoint = endpoint
+        self.api_key = key
         self.session = requests.Session()
 
     def get_block(self, block_number: str):

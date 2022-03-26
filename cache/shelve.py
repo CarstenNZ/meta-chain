@@ -1,6 +1,8 @@
 import shelve
 from pathlib import Path
+from typing import Optional
 
+from config import Config
 from std_format import Hex
 from chainmodel.base import Block
 from cache.base import Cache
@@ -8,7 +10,13 @@ from cache.base import Cache
 
 # noinspection PyUnresolvedReferences
 class ShelveCache(Cache):
-    def __init__(self, file_path, clear=False):
+    def __init__(self, config: Optional[Config], clear=False, explicit_path=None):
+        """
+            - explicit_path overrides config (config can be Null in this case)
+            - clear creates an empty cache
+        """
+
+        file_path = explicit_path or config.get_cache_path()
         if clear:
             Path(file_path).unlink(missing_ok=True)
 

@@ -9,8 +9,8 @@ class TestEtherscanIo(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        endpoint, key = Config(['~/meta-chain.yaml', '../meta-chain.yaml']).get_etherscanIo_service()
-        cls.eio = EtherscanIo(endpoint, key)
+        config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
+        cls.eio = EtherscanIo(config)
 
     @classmethod
     def tearDownClass(cls):
