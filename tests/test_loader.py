@@ -1,32 +1,39 @@
 import unittest
+from pathlib import Path
 
 from cache.shelve import ShelveCache
 from config import Config
 from datasource.etherscan_io import EtherscanIo
+from datasource.web3 import WebThree
 from loader import Loader
 
 
 class TestLoader(unittest.TestCase):
-    dbPath = '/tmp/test.shelve'
-    loader = None
+    dbDirectory = Path('/tmp')
+    loaders = {}
 
     @classmethod
     def setUpClass(cls):
         config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
-        cache = ShelveCache(None, explicit_path=cls.dbPath, clear=True)
-        eio = EtherscanIo(config)
-        cls.loader = Loader([eio], cache)
+        cls.loaders = {'ethereum.io': Loader([EtherscanIo(config)],
+                                             ShelveCache(None, explicit_path=cls.dbDirectory / 'eioCache.shelve',
+                                                         clear=True)),
+                       'web3': Loader([WebThree(config)],
+                                      ShelveCache(None, explicit_path=cls.dbDirectory / 'webCache.shelve', clear=True))
+                       }
 
     @classmethod
     def tearDownClass(cls):
-        cls.loader.close()
+        [ld.close() for ld in cls.loaders.values()]
 
     def test_basicLoaderTest(self):
-        block1 = self.loader.get_block('0x123456')   # from data source
-        block2 = self.loader.get_block('0x123456')   # from mem cache
-        self.assertTrue(id(block1) == id(block2))
+        for name, loader in self.loaders.items():
+            block1 = loader.get_block(0x123456)   # from data source
+            block2 = loader.get_block(0x123456)   # from mem cache
+            self.assertTrue(id(block1) == id(block2))
 
     def test_getReceipt(self):
-        receipt = self.loader.get_transaction_receipt(
-            '0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391')
-        assert receipt.blockHash == '0xb5e7f8b71f2ea15f001634a9f7657cd35d29898d56de57663de0e7ebc15b7b54'
+        for name, loader in self.loaders.items():
+            receipt = loader.get_transaction_receipt(
+                '0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391')
+            assert receipt.blockHash == '0xb5e7f8b71f2ea15f001634a9f7657cd35d29898d56de57663de0e7ebc15b7b54'

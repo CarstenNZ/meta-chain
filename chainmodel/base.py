@@ -66,9 +66,11 @@ class Block(ChainData):
     yaml_tag = '!Block'
 
     def __init__(self, data_dict):
-        self.number = ""
         self.transactions = []
         super().__init__(data_dict)
+
+        # noinspection PyUnresolvedReferences
+        self.number: int = self.number if isinstance(self.number, int) else int(self.number, 0)
 
     def _transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])

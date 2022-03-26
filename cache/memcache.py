@@ -6,14 +6,15 @@ from chainmodel.base import Block, Receipt
 # noinspection PyUnresolvedReferences
 class MemCache(Cache):
     def __init__(self):
-        self._blocks = {}
+        self._blocks: Dict[int, Block] = {}
         self._receipts = {}
 
     def add_block(self, block: Block):
-        self._blocks[Hex.fmt(block.number)] = block
+        assert type(block.number) is int
+        self._blocks[block.number] = block
 
-    def get_block(self, block_number):
-        return self._blocks.get(Hex.fmt(block_number))
+    def get_block(self, block_number: int):
+        return self._blocks.get(block_number)
 
     def add_transaction_receipt(self, receipt: Receipt):
         self._receipts[Hex.fmt(receipt.transactionHash)] = receipt

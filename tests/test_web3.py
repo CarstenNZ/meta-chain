@@ -9,14 +9,14 @@ class TestWeb3(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        endpoint = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml']).get_web3_endpoint()
-        cls.w3 = WebThree(endpoint)
+        config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
+        cls.w3 = WebThree(config)
 
     @classmethod
     def tearDownClass(cls):
         cls.w3.close()
 
     def test_blockRequest(self):
-        block = self.w3.get_block('0x123456')
+        block = self.w3.get_block(0x123456)
         assert block.extraData == '0xd783010305844765746887676f312e352e31856c696e7578'
 

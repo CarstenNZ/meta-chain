@@ -5,7 +5,6 @@ import requests
 from chainmodel.base import Block, Receipt
 from config import Config
 from datasource.base import DataSource
-from std_format import Hex
 
 
 class EtherscanIo(DataSource):
@@ -16,9 +15,8 @@ class EtherscanIo(DataSource):
         self.api_key = key
         self.session = requests.Session()
 
-    def get_block(self, block_number: str):
-        block_number = Hex.fmt(block_number)
-        return Block(self.get('proxy', 'eth_getBlockByNumber', tag=block_number, boolean='true'))
+    def get_block(self, block_number: int):
+        return Block(self.get('proxy', 'eth_getBlockByNumber', tag=hex(block_number), boolean='true'))
 
     def get_transaction_receipt(self, transaction_hash):
         return Receipt(self.get('proxy', 'eth_getTransactionReceipt', txhash=transaction_hash))

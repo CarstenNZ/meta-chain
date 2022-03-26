@@ -20,13 +20,13 @@ class ShelveCache(Cache):
         if clear:
             Path(file_path).unlink(missing_ok=True)
 
-        self._shelve = shelve.open(file_path)
+        self._shelve = shelve.open(str(file_path))
 
     def add_block(self, block: Block):
-        self._shelve['b' + Hex.fmt(block.number)] = block
+        self._shelve[f'b{block.number}'] = block
 
-    def get_block(self, block_number):
-        return self._shelve.get('b' + Hex.fmt(block_number))
+    def get_block(self, block_number: int):
+        return self._shelve.get(f'b{block_number}')
 
     def add_transaction_receipt(self, receipt: Receipt):
         self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt

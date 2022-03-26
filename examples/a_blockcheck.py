@@ -17,8 +17,8 @@ def main():
     loader = Loader([EtherscanIo(config)], ShelveCache(config))
 
     # load the same block twice
-    block1 = loader.get_block('0x123456')   # loaded from persistent cache or data source
-    block2 = loader.get_block('0x123456')   # loaded from mem cache
+    block1 = loader.get_block(0x123456)   # loaded from persistent cache or data source
+    block2 = loader.get_block(0x123456)   # loaded from mem cache
 
     # same python object
     assert id(block1) == id(block2)

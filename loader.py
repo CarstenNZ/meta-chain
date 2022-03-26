@@ -17,19 +17,21 @@ class Loader:
         self.caches = [MemCache()] + ([db_cache] if db_cache else [])
 
     def close(self):
-        """ only useful for testing """
+        """ - only useful for testing
+        """
         [c.close() for c in self. caches]
         [ds.close() for ds in self.data_sources]
         self.caches = self.data_sources = ()
 
-    def get_block(self, block_number):
+    def get_block(self, block_number: int):
         return self.__get('block', block_number)
 
     def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
         return self.__get('transaction_receipt', txhash)
 
     def __get(self, attrib, arg):
-        """ generic cache and data source access method """
+        """ generic cache and data source access method
+        """
         def update_cache(hit_cache):
             for inner_cache in self.caches:
                 if inner_cache == hit_cache:
