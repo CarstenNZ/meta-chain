@@ -16,11 +16,12 @@ class WebThree(DataSource):
         self.w3 = Web3(Web3.HTTPProvider(config.get_web3_endpoint()))
 
     def get_block(self, block_number: int):
-        return Block(self.w3.eth.get_block(block_number, full_transactions=True))
+        block_src = self.w3.eth.get_block(block_number, full_transactions=True)
+        return Block(block_src), block_src
 
     def get_transaction_receipt(self, transaction_hash):
-        ret = Receipt(self.w3.eth.get_transaction_receipt(cast(HexStr, transaction_hash)))
-        return ret
+        receipt_src = self.w3.eth.get_transaction_receipt(cast(HexStr, transaction_hash))
+        return Receipt(receipt_src), receipt_src
 
     def close(self):
         del self.w3

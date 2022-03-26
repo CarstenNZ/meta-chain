@@ -22,14 +22,14 @@ class ShelveCache(Cache):
 
         self._shelve = shelve.open(str(file_path))
 
-    def add_block(self, block: Block):
-        self._shelve[f'b{block.number}'] = block
+    def add_block(self, block: Block, block_src: str):
+        self._shelve[f'b{block.number}'] = block_src
 
     def get_block(self, block_number: int):
         return self._shelve.get(f'b{block_number}')
 
-    def add_transaction_receipt(self, receipt: Receipt):
-        self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt
+    def add_transaction_receipt(self, receipt: Receipt, receipt_src: str):
+        self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt_src
 
     def get_transaction_receipt(self, transaction_hash):
         return self._shelve.get('r' + Hex.fmt(transaction_hash))

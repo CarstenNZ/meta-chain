@@ -32,11 +32,13 @@ class EtherscanIo(DataSource):
 
     def get_block(self, block_number: int):
         data_dict = self.get('proxy', 'eth_getBlockByNumber', tag=hex(block_number), boolean='true')
-        return Block(self._fix_itemTypes(data_dict, EtherscanIo.Block_Converter))
+        block_src = self._fix_itemTypes(data_dict, EtherscanIo.Block_Converter)
+        return Block(block_src), block_src
 
     def get_transaction_receipt(self, transaction_hash):
         data_dict = self.get('proxy', 'eth_getTransactionReceipt', txhash=transaction_hash)
-        return Receipt(self._fix_itemTypes(data_dict, EtherscanIo.Receipt_Converter))
+        receipt_src = self._fix_itemTypes(data_dict, EtherscanIo.Receipt_Converter)
+        return Receipt(receipt_src), receipt_src
 
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict

@@ -37,7 +37,7 @@ class Loader:
                 if inner_cache == hit_cache:
                     return obj
 
-                getattr(inner_cache, adder)(obj)
+                getattr(inner_cache, adder)(obj, obj_src)
 
             return obj
         # <def
@@ -53,7 +53,7 @@ class Loader:
 
         # from data sources
         for ds in self.data_sources:
-            obj = getattr(ds, getter)(arg)
+            obj, obj_src = getattr(ds, getter)(arg)
             if obj:
                 return update_cache(None)
 

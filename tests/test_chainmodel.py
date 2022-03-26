@@ -65,4 +65,4 @@ class TestChainModel(unittest.TestCase):
         assert len(block.transactions) == 3
         # noinspection SpellCheckingInspection
         assert block.transactions[2].hash == '0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674'
-        return block
+        return block, self.Block_dict

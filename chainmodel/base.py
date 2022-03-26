@@ -1,4 +1,5 @@
-from typing import List
+import base64
+from typing import List, Dict, Set
 
 import yaml
 from hexbytes import HexBytes
@@ -69,10 +70,10 @@ class Block(ChainData):
         # noinspection PyUnresolvedReferences
         self.number: int = self.number if isinstance(self.number, int) else int(self.number, 0)
 
-    def _transactions(self, key, val):
+    def _init_transactions(self, key, val):
         setattr(self, key, [Transaction(d) for d in val])
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.number}>"
 
-    _AttrHandlers = {'transactions': _transactions}
+    _AttrHandlers = {'transactions': _init_transactions}

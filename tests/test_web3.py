@@ -17,6 +17,7 @@ class TestWeb3(unittest.TestCase):
         cls.w3.close()
 
     def test_blockRequest(self):
-        block = self.w3.get_block(0x123456)
+        block, block_src = self.w3.get_block(0x123456)
+        # noinspection PyUnresolvedReferences
         assert block.extraData == '0xd783010305844765746887676f312e352e31856c696e7578'
 

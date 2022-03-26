@@ -9,9 +9,9 @@ class Cache(DataSource):
     """
 
     @abstractmethod
-    def add_block(self, block: Block):
+    def add_block(self, block: Block, block_src: str):
         pass
 
     @abstractmethod
-    def add_transaction_receipt(self, receipt: Receipt):
+    def add_transaction_receipt(self, receipt: Receipt, receipt_src: str):
         pass

@@ -21,6 +21,7 @@ class TestEtherscanIo(unittest.TestCase):
         assert {'ethbtc', 'ethusd'}.issubset(res.keys())
 
     def test_blockRequest(self):
-        block = self.eio.get_block(0x123456)
+        block, block_src = self.eio.get_block(0x123456)
+        # noinspection PyUnresolvedReferences
         assert block.extraData == '0xd783010305844765746887676f312e352e31856c696e7578'
 
