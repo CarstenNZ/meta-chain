@@ -66,12 +66,15 @@ class TestChainModelWithoutLoader(unittest.TestCase):
 
 
 class TestChainModel0x123456(unittest.TestCase):
+
+    # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
         Account.All_Accounts.clear()        # needs clear slate
         config = Config.from_files(['data/0x123456-tests.yaml'])
-        loader = Loader([], ShelveCache(config))
-        cls.block = loader.get_block(0x123456)
+        cls.loader = Loader([], ShelveCache(config))
+        cls.block = cls.loader.get_block(0x123456)
+        cls.receipts = [cls.loader.get_transaction_receipt(transact.hash) for transact in cls.block.transactions]
 
     @classmethod
     def tearDownClass(cls):
@@ -84,16 +87,28 @@ class TestChainModel0x123456(unittest.TestCase):
         accountStrs = [f'{acc}: {sorted(str(r) for r in acc.xref)}' for acc in
                        sorted(Account.All_Accounts.values(), key=lambda a: a.address)]
 
+        # noinspection SpellCheckingInspection
         expectedAccountStr = [
-            "<Account 0x151255dd9e38e44db38ea06ec66d0d113d6cbe37>: ['<Transaction #1193046/1>']",
-            "<Account 0x2a65aca4d5fc5b5c859090a6c34d164135398226>: ['<Block #1193046>', '<Transaction #1193046/0>']",
-            "<Account 0x6b3b2c3f961b2c3f2593338858ca89fa4c0ca247>: ['<Transaction #1193046/2>']",
-            "<Account 0xa5ed89106ad81162f185e13b624838c693305a78>: ['<Transaction #1193046/1>']",
-            "<Account 0xdbcbd5fc3693a8d6262b21376913c655d6e53c99>: ['<Transaction #1193046/0>']",
-            "<Account 0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98>: ['<Transaction #1193046/2>']"]
+            "<Account 0x151255dd9e38e44db38ea06ec66d0d113d6cbe37>: ['<Receipt #0x31c027886e28938ab21b8e371f3d3b3f3ff221b2786150b7e91d2bbdd69c4943>', '<Transaction #1193046/1>']",
+            "<Account 0x2a65aca4d5fc5b5c859090a6c34d164135398226>: ['<Block #1193046>', '<Receipt #0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391>', '<Transaction #1193046/0>']",
+            "<Account 0x6b3b2c3f961b2c3f2593338858ca89fa4c0ca247>: ['<Receipt #0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674>', '<Transaction #1193046/2>']",
+            "<Account 0xa5ed89106ad81162f185e13b624838c693305a78>: ['<Receipt #0x31c027886e28938ab21b8e371f3d3b3f3ff221b2786150b7e91d2bbdd69c4943>', '<Transaction #1193046/1>']",
+            "<Account 0xdbcbd5fc3693a8d6262b21376913c655d6e53c99>: ['<Receipt #0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391>', '<Transaction #1193046/0>']",
+            "<Account 0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98>: ['<Receipt #0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674>', '<Transaction #1193046/2>']"]
 
+        self.maxDiff = None
         self.assertListEqual(accountStrs, expectedAccountStr)
 
-    # def test_receiptTransactionBlock_navigation(self):
+    def test_blockTransactionReceipt_navigation(self):
+        # via loader
+        receipts_via_loader = [self.loader.get_transaction_receipt(trans.hash) for trans in self.block.transactions]
 
+        # from transaction
+        receipts_direct = [trans.get_receipt(self.loader) for trans in self.block.transactions]
 
+        self.assertListEqual(receipts_via_loader, receipts_direct)
+
+        # receipt to transaction
+        transacts_from_receipts = [receipt.get_transaction(self.loader) for receipt in receipts_direct]
+
+        self.assertListEqual(transacts_from_receipts, self.block.transactions)

@@ -2,6 +2,7 @@ import base64
 from typing import List, Dict, Set
 
 import yaml
+
 from std_format import Hex
 
 
@@ -76,6 +77,9 @@ class Transaction(ChainData):
         self.transactionIndex = -1
         super().__init__(data_dict)
 
+    def get_receipt(self, loader):
+        return loader.get_transaction_receipt(self.hash)
+
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
 
@@ -85,9 +89,13 @@ class Receipt(ChainData):
                      'to': ChainData._ref_account}
 
     def __init__(self, data_dict):
-        self.blockHash = None
         self.transactionHash = None
         super().__init__(data_dict)
+
+    # noinspection PyUnresolvedReferences
+    def get_transaction(self, loader):
+        block = loader.get_block(self.blockNumber)
+        return block.transactions[self.transactionIndex]
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.transactionHash}>"

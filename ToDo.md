@@ -1,7 +1,5 @@
 
-- navigation from receipt to block to transaction
-  - add Block.All_Blocks
-  - tests for Accounts and xref 
+- do we really need All_Accounts (trouble) ?
 
 - text file cache :)
   - great basis for examples and demo

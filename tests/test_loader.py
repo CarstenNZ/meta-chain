@@ -32,6 +32,7 @@ class TestLoader(unittest.TestCase):
             block2 = loader.get_block(0x123456)   # from mem cache
             self.assertTrue(id(block1) == id(block2))
 
+    # noinspection PyUnresolvedReferences
     def test_getReceipt(self):
         for name, loader in self.loaders.items():
             receipt = loader.get_transaction_receipt(
