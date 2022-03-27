@@ -5,7 +5,7 @@ from cache.shelvecache import ShelveCache
 from config import Config
 from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
-from loader import Loader
+from loader.loader import Loader
 
 
 class TestLoader(unittest.TestCase):

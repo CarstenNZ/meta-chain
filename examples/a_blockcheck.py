@@ -3,7 +3,7 @@ from cache.shelvecache import ShelveCache
 from config import Config
 # from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
-from loader import Loader
+from loader.loader import Loader
 
 CONFIG_PATHS = ['~/meta-chain.yaml',  # your copy with api keys, not part of project
                 '../meta-chain.yaml'  # example config

@@ -2,7 +2,7 @@ import unittest
 
 from config import Config
 from cache.shelvecache import ShelveCache
-from loader import Loader
+from loader.loader import Loader
 from chainmodel.base import Block, Account
 
 
