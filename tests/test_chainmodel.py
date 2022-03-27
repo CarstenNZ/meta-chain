@@ -7,7 +7,7 @@ from chainmodel.base import Block, Account
 
 
 # noinspection PyUnresolvedReferences
-class TestChainModel(unittest.TestCase):
+class TestChainModelWithoutLoader(unittest.TestCase):
     # noinspection SpellCheckingInspection
     Block_dict = {
         'difficulty': 19100011551035, 'extraData': '0xd783010305844765746887676f312e352e31856c696e7578',
@@ -64,12 +64,22 @@ class TestChainModel(unittest.TestCase):
 
         return block, self.Block_dict
 
+
+class TestChainModel0x123456(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        Account.All_Accounts.clear()        # needs clear slate
+        config = Config.from_files(['data/0x123456-tests.yaml'])
+        loader = Loader([], ShelveCache(config))
+        cls.block = loader.get_block(0x123456)
+
+    @classmethod
+    def tearDownClass(cls):
+        Account.All_Accounts.clear()
+
     def test_relatedAccounts(self):
         """ check accounts collected from block 0x123456 are stable
         """
-        config = Config.from_files(['data/0x123456-tests.yaml'])
-        loader = Loader([], ShelveCache(config))
-        loader.get_block(0x123456)
 
         accountStrs = [f'{acc}: {sorted(str(r) for r in acc.xref)}' for acc in
                        sorted(Account.All_Accounts.values(), key=lambda a: a.address)]
@@ -84,5 +94,6 @@ class TestChainModel(unittest.TestCase):
 
         self.assertListEqual(accountStrs, expectedAccountStr)
 
+    # def test_receiptTransactionBlock_navigation(self):
 
 

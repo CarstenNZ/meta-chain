@@ -2,15 +2,16 @@ import os
 import unittest
 
 from cache.shelvecache import ShelveCache
-from chainmodel.base import Transaction
+from chainmodel.base import Transaction, Block
 from config import Config
-from tests.test_chainmodel import TestChainModel
+from tests.test_chainmodel import TestChainModelWithoutLoader
 
 
 class TestShelveCache(unittest.TestCase):
     def test_createShelfCache(self):
         config = Config(dict(cache=dict(path='/tmp/test.shelve')))
-        block, block_src = TestChainModel().test_createDataObjectFromDict()
+        block_src = TestChainModelWithoutLoader.Block_dict
+        block = Block(block_src)
 
         with ShelveCache(config, clear=True) as db:
             db.add_block(block, block_src)
