@@ -2,7 +2,7 @@ import unittest
 
 from config import Config
 from cache.shelvecache import ShelveCache
-from loader.loader import Loader
+from load.loader import Loader
 from chainmodel.base import Block, Account
 
 
@@ -66,8 +66,8 @@ class TestChainModelWithoutLoader(unittest.TestCase):
 
 
 class TestChainModel0x123456(unittest.TestCase):
+    loader = block = None
 
-    # noinspection PyUnresolvedReferences
     @classmethod
     def setUpClass(cls):
         Account.All_Accounts.clear()        # needs clear slate
@@ -79,6 +79,7 @@ class TestChainModel0x123456(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         Account.All_Accounts.clear()
+        cls.loader.close()
 
     def test_relatedAccounts(self):
         """ check accounts collected from block 0x123456 are stable
@@ -100,7 +101,7 @@ class TestChainModel0x123456(unittest.TestCase):
         self.assertListEqual(accountStrs, expectedAccountStr)
 
     def test_blockTransactionReceipt_navigation(self):
-        # via loader
+        # via load
         receipts_via_loader = [self.loader.get_transaction_receipt(trans.hash) for trans in self.block.transactions]
 
         # from transaction

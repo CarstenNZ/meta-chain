@@ -4,10 +4,11 @@ from cache.base import Cache
 from cache.memcache import MemCache
 from chainmodel.base import Receipt, Block
 from datasource.base import DataSource
+from load.loaderbase import LoaderBase
 
 
-class Loader:
-    """ smart loader, tries memory cache, DB cache and then all the provided data sources
+class Loader(LoaderBase):
+    """ smart load, tries memory cache, DB cache and then all the provided data sources
         - if used for all loads (no direct DB or data source calls) then only a single instance
           will exist for each distinct chain object
     """
