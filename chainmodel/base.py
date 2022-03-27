@@ -3,6 +3,7 @@ from typing import List, Dict, Set
 
 import yaml
 
+from load.loaderbase import LoaderBase
 from std_format import Hex
 
 
@@ -77,8 +78,9 @@ class Transaction(ChainData):
         self.transactionIndex = -1
         super().__init__(data_dict)
 
-    def get_receipt(self, loader):
-        return loader.get_transaction_receipt(self.hash)
+    def get_receipt(self, loader=None):
+        assert (loader or LoaderBase.Default_Loader), "needs explicit loader argument or active (default) Loader"
+        return (loader or LoaderBase.Default_Loader).get_transaction_receipt(self.hash)
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
@@ -93,8 +95,9 @@ class Receipt(ChainData):
         super().__init__(data_dict)
 
     # noinspection PyUnresolvedReferences
-    def get_transaction(self, loader):
-        block = loader.get_block(self.blockNumber)
+    def get_transaction(self, loader=None):
+        assert (loader or LoaderBase.Default_Loader), "needs explicit loader argument or active (default) Loader"
+        block = (loader or LoaderBase.Default_Loader).get_block(self.blockNumber)
         return block.transactions[self.transactionIndex]
 
     def __str__(self):

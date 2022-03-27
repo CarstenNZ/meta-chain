@@ -105,11 +105,11 @@ class TestChainModel0x123456(unittest.TestCase):
         receipts_via_loader = [self.loader.get_transaction_receipt(trans.hash) for trans in self.block.transactions]
 
         # from transaction
-        receipts_direct = [trans.get_receipt(self.loader) for trans in self.block.transactions]
+        receipts_direct = [trans.get_receipt() for trans in self.block.transactions]
 
         self.assertListEqual(receipts_via_loader, receipts_direct)
 
         # receipt to transaction
-        transacts_from_receipts = [receipt.get_transaction(self.loader) for receipt in receipts_direct]
+        transacts_from_receipts = [receipt.get_transaction() for receipt in receipts_direct]
 
         self.assertListEqual(transacts_from_receipts, self.block.transactions)

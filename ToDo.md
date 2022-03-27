@@ -1,6 +1,6 @@
 
 - do we really need All_Accounts (trouble) ?
-  - default Loader  
+  - move into Loader
 
 - text file cache :)
   - great basis for examples and demo

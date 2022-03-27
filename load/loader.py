@@ -14,6 +14,7 @@ class Loader(LoaderBase):
     """
 
     def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[Cache] = None):
+        super().__init__()
         self.data_sources = tuple(data_sources)
         self.caches = [MemCache()] + ([db_cache] if db_cache else [])
 
@@ -23,6 +24,7 @@ class Loader(LoaderBase):
         [c.close() for c in self. caches]
         [ds.close() for ds in self.data_sources]
         self.caches = self.data_sources = ()
+        super().close()
 
     def get_block(self, block_number: int) -> Block:
         return self.__get('block', block_number)
