@@ -32,7 +32,8 @@ class ChainData(yaml.YAMLObject):
         """
         return yaml.dump(self, indent=4)
 
-    def _ref_account(self, _field, address):
+    def _ref_account(self, field, address):
+        self.attr_default_handler(field, address)
         Account.add_xref(address, self)
 
     def __str__(self):
