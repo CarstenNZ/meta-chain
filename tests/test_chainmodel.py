@@ -1,9 +1,9 @@
 import unittest
 
-from config import Config
 from cache.shelvecache import ShelveCache
+from chainmodel.base import Block
+from config import Config
 from load.loader import Loader
-from chainmodel.base import Block, Account
 
 
 # noinspection PyUnresolvedReferences
@@ -58,10 +58,6 @@ class TestChainModelWithoutLoader(unittest.TestCase):
         # noinspection SpellCheckingInspection
         assert block.transactions[2].hash == '0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674'
 
-        # The block didn't go through the cache, but is reachable via Account.All_Accounts (xref).
-        # This breaks the order for the following tests, so we have to clean up to avoid this.
-        Account.All_Accounts.clear()
-
         return block, self.Block_dict
 
 
@@ -70,7 +66,6 @@ class TestChainModel0x123456(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        Account.All_Accounts.clear()        # needs clear slate
         config = Config.from_files(['data/0x123456-tests.yaml'])
         cls.loader = Loader([], ShelveCache(config))
         cls.block = cls.loader.get_block(0x123456)
@@ -78,7 +73,6 @@ class TestChainModel0x123456(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        Account.All_Accounts.clear()
         cls.loader.close()
 
     def test_relatedAccounts(self):
@@ -86,7 +80,7 @@ class TestChainModel0x123456(unittest.TestCase):
         """
 
         accountStrs = [f'{acc}: {sorted(str(r) for r in acc.xref)}' for acc in
-                       sorted(Account.All_Accounts.values(), key=lambda a: a.address)]
+                       sorted(Loader.All_Accounts.values(), key=lambda a: a.address)]
 
         # noinspection SpellCheckingInspection
         expectedAccountStr = [

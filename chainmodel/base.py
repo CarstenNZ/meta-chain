@@ -1,5 +1,5 @@
 import base64
-from typing import List, Dict, Set
+from typing import List, Set
 
 import yaml
 
@@ -41,8 +41,6 @@ class ChainData(yaml.YAMLObject):
 
 
 class Account(ChainData):
-    All_Accounts: Dict[str, 'Account'] = {}
-
     def __init__(self, address: str):
         assert Hex.isHexStr(address)
 
@@ -56,11 +54,20 @@ class Account(ChainData):
         return base64.b32encode(bytearray.fromhex(self.address[2:12])).decode()
 
     @staticmethod
-    def add_xref(address: str, ref_data: ChainData):
+    def get_account(address) -> 'Account':
+        """ returns Account for address
+            - creates if it doesn't exist yet
+        """
         address = Hex.fmt(address)
-        acc = Account.All_Accounts.get(address)
+        acc = LoaderBase.All_Accounts.get(address)
         if acc is None:
-            Account.All_Accounts[Hex.fmt(address)] = acc = Account(address)
+            LoaderBase.All_Accounts[address] = acc = Account(address)
+
+        return acc
+
+    @staticmethod
+    def add_xref(address: str, ref_data: ChainData):
+        acc = Account.get_account(address)
 
         acc.xref.add(ref_data)
         return acc
