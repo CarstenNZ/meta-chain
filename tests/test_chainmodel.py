@@ -80,7 +80,7 @@ class TestChainModel0x123456(unittest.TestCase):
         """
 
         accountStrs = [f'{acc}: {sorted(str(r) for r in acc.xref)}' for acc in
-                       sorted(Loader.All_Accounts.values(), key=lambda a: a.address)]
+                       sorted(Loader.all_accounts(), key=lambda a: a.address)]
 
         # noinspection SpellCheckingInspection
         expectedAccountStr = [

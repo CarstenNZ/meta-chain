@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Dict
 
 from cache.base import Cache
 from cache.memcache import MemCache
@@ -13,10 +13,12 @@ class Loader(LoaderBase):
           will exist for each distinct chain object
     """
 
-    def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[Cache] = None):
+    def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[Cache] = None,
+                 acc_names: Dict[str, str] = None):
         super().__init__()
         self.data_sources = tuple(data_sources)
         self.caches = [MemCache()] + ([db_cache] if db_cache else [])
+        self.acc_names = acc_names or {}
 
     def close(self):
         """ - only useful for testing
@@ -31,6 +33,9 @@ class Loader(LoaderBase):
 
     def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
         return self.__get('transaction_receipt', txhash)
+
+    def _get_account_name(self, address) -> Optional[str]:
+        return self.acc_names.get(address)
 
     def __get(self, attrib, arg):
         """ generic cache and data-source access method
