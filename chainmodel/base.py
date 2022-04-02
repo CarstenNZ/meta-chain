@@ -1,3 +1,4 @@
+import base64
 from typing import List, Set
 
 from load.loaderbase import LoaderBase
@@ -46,9 +47,10 @@ class ChainData:
 
         pretty_fmt = {
             str: lambda v: f"'{v}'",
-            int: lambda v: f"{v}",
+            int: lambda v: str(v),
             list: lambda v: fmt_list(v),
             Transaction: lambda v: v.pretty(indent_level + 2),
+            Account: lambda v: str(v),
             type(None): lambda v: "None"
         }
 
@@ -56,8 +58,8 @@ class ChainData:
         return f"{self.__class__.__name__}{new_line}{fields}"
 
     def _ref_account(self, field, address):
-        Account.add_xref(address, self)
-        self.attr_default_handler(field, address)
+        acc = Account.add_xref(address, self)
+        self.attr_default_handler(field, acc)
 
     def __str__(self):
         return f"<{self.__class__.__name__}>"
@@ -69,7 +71,7 @@ class Account(ChainData):
 
         super().__init__({})
         self.address = address
-        self.name = name
+        self.name = name or base64.b32encode(bytearray.fromhex(self.address[2:12])).decode()
         self.xref: Set[ChainData] = set()
 
     # @property
