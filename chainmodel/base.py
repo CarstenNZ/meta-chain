@@ -1,12 +1,10 @@
 from typing import List, Set
 
-import yaml
-
 from load.loaderbase import LoaderBase
 from std_format import Hex
 
 
-class ChainData(yaml.YAMLObject):
+class ChainData:
     _AttrHandlers = {}
 
     def __init__(self, data_dict):
@@ -21,15 +19,31 @@ class ChainData(yaml.YAMLObject):
     def attr_default_handler(self, key, value):
         """ removes all special types, e.g. HexBytes from web3
         """
-        if type(value) is str and Hex.isHexStr(value):    # std format for hex strings
+        if type(value) is str and Hex.isHexStr(value):  # std format for hex strings
             value = Hex.fmt(value)
 
         setattr(self, key, value)
 
     def pretty(self):
-        """ return pretty formatted ChainData, multiline! yaml
+        """ return pretty formatted ChainData
         """
-        return yaml.dump(self, indent=4)
+
+        def fmt_field(fld_name, value):
+            return f"{fld_name}: {pretty_fmt[type(value)](value)}"
+
+        def fmt_list(list_):
+            elements = "\n\t".join(str(i) for i in list_)
+            return f"[\n\t{elements}]"
+
+        pretty_fmt = {
+            str: lambda v: f"'{v}'",
+            int: lambda v: f"{v}",
+            list: lambda v: fmt_list(v),
+            type(None): lambda v: "None"
+        }
+
+        fields = "\n\t".join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
+        return f"{self.__class__.__name__}\n\t{fields}"
 
     def _ref_account(self, field, address):
         Account.add_xref(address, self)
