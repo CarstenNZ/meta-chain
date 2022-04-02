@@ -1,4 +1,7 @@
-from typing import Optional, Sequence, Dict
+from pathlib import Path
+from typing import Optional, Sequence
+
+import yaml
 
 from cache.base import Cache
 from cache.memcache import MemCache
@@ -14,11 +17,15 @@ class Loader(LoaderBase):
     """
 
     def __init__(self, data_sources: Sequence[DataSource], db_cache: Optional[Cache] = None,
-                 acc_names: Dict[str, str] = None):
+                 acc_names_yaml_path: Path = None):
         super().__init__()
         self.data_sources = tuple(data_sources)
         self.caches = [MemCache()] + ([db_cache] if db_cache else [])
-        self.acc_names = acc_names or {}
+
+        if acc_names_yaml_path:
+            self.acc_names = yaml.Loader(open(acc_names_yaml_path)).get_data()
+        else:
+            self.acc_names = {}
 
     def close(self):
         """ - only useful for testing

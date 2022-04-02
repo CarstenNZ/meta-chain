@@ -1,3 +1,4 @@
+from pathlib import Path
 
 from cache.shelvecache import ShelveCache
 from config import Config
@@ -9,8 +10,6 @@ CONFIG_PATHS = ['~/meta-chain.yaml',  # your copy with api keys, not part of pro
                 '../meta-chain.yaml'  # example config
                 ]
 
-Acc_Names = {'0x2a65aca4d5fc5b5c859090a6c34d164135398226': 'theMiner'}
-
 
 def main():
     # find a config file
@@ -18,7 +17,8 @@ def main():
 
     # create load, this will fail without api keys in your config
     # with Loader([EtherscanIo(config)], ShelveCache(config, explicit_path='/tmp/eio.shelve')) as load:
-    with Loader([WebThree(config)], ShelveCache(config, explicit_path='/tmp/web3.shelve'), Acc_Names) as loader:
+    with Loader([WebThree(config)], ShelveCache(config, explicit_path='/tmp/web3.shelve'),
+                Path('../tests/data/known_accounts.yaml')) as loader:
 
         # load the same block twice
         block1 = loader.get_block(0x123456)   # loaded from persistent cache or data source
