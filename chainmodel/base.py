@@ -24,26 +24,36 @@ class ChainData:
 
         setattr(self, key, value)
 
-    def pretty(self):
+    def pretty(self, indent_level=0):
         """ return pretty formatted ChainData
         """
+        new_line = '\n' + '\t' * (indent_level + 1)
+
+        def fmt_value(value):
+            return pretty_fmt[type(value)](value)
 
         def fmt_field(fld_name, value):
-            return f"{fld_name}: {pretty_fmt[type(value)](value)}"
+            return f"{fld_name}: {fmt_value(value)}"
 
         def fmt_list(list_):
-            elements = "\n\t".join(str(i) for i in list_)
-            return f"[\n\t{elements}]"
+            if not len(list_):
+                return "[]"
+
+            list_new_line = new_line + '\t'
+            elements = list_new_line.join(fmt_value(i) for i in list_)
+            return f"[{list_new_line}{elements}{new_line}]"
+        # <def
 
         pretty_fmt = {
             str: lambda v: f"'{v}'",
             int: lambda v: f"{v}",
             list: lambda v: fmt_list(v),
+            Transaction: lambda v: v.pretty(indent_level + 2),
             type(None): lambda v: "None"
         }
 
-        fields = "\n\t".join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
-        return f"{self.__class__.__name__}\n\t{fields}"
+        fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
+        return f"{self.__class__.__name__}{new_line}{fields}"
 
     def _ref_account(self, field, address):
         Account.add_xref(address, self)
