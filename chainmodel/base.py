@@ -31,7 +31,7 @@ class ChainData:
         new_line = '\n' + '\t' * (indent_level + 1)
 
         def fmt_value(value):
-            return pretty_fmt[type(value)](value)
+            return pretty_fmt.get(type(value), str)(value)
 
         def fmt_field(fld_name, value):
             return f"{fld_name}: {fmt_value(value)}"
@@ -46,16 +46,12 @@ class ChainData:
 
         # <def
 
-        pretty_fmt = {  # TODO, make str(v) default
+        pretty_fmt = {
             str: lambda v: f"'{v}'",
-            int: lambda v: str(v),
-            bool: lambda v: str(v),
             list: lambda v: fmt_list(v),
             # dict: lambda v: breakpoint(), # ">>>{v}<<<",
             Transaction: lambda v: v.pretty(indent_level + 2),
             Log: lambda v: v.pretty(indent_level + 2),
-            Account: lambda v: str(v),
-            type(None): lambda v: str(v)
         }
 
         fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
