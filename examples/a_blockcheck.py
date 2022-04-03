@@ -15,9 +15,9 @@ def main():
     # find a config file
     config = Config.from_files(CONFIG_PATHS)
 
-    # create load, this will fail without api keys in your config
-    # with Loader([EtherscanIo(config)], ShelveCache(config, explicit_path='/tmp/eio.shelve')) as load:
-    with Loader([WebThree(config)], ShelveCache(config, explicit_path='/tmp/web3.shelve'),
+    # create loader, this will fail without api keys in your config
+    data_source = WebThree(config)      # or use EtherscanIo(config)
+    with Loader([data_source], ShelveCache(config, explicit_path='/tmp/web3.shelve'),
                 Path('../tests/data/known_accounts.yaml')) as loader:
 
         # load the same block twice
