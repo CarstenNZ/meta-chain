@@ -84,12 +84,13 @@ class TestChainModel0x123456(unittest.TestCase):
 
         # noinspection SpellCheckingInspection
         expectedAccountStr = [
-            "<Account 0x151255dd9e38e44db38ea06ec66d0d113d6cbe37>: ['<Receipt #0x31c027886e28938ab21b8e371f3d3b3f3ff221b2786150b7e91d2bbdd69c4943>', '<Transaction #1193046/1>']",
-            "<Account 0x2a65aca4d5fc5b5c859090a6c34d164135398226>: ['<Block #1193046>', '<Receipt #0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391>', '<Transaction #1193046/0>']",
-            "<Account 0x6b3b2c3f961b2c3f2593338858ca89fa4c0ca247>: ['<Receipt #0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674>', '<Transaction #1193046/2>']",
-            "<Account 0xa5ed89106ad81162f185e13b624838c693305a78>: ['<Receipt #0x31c027886e28938ab21b8e371f3d3b3f3ff221b2786150b7e91d2bbdd69c4943>', '<Transaction #1193046/1>']",
-            "<Account 0xdbcbd5fc3693a8d6262b21376913c655d6e53c99>: ['<Receipt #0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391>', '<Transaction #1193046/0>']",
-            "<Account 0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98>: ['<Receipt #0x02aea44c3af5b6398a27cf596abadae20a8e61ea37978d6b1bb0d6dec089a674>', '<Transaction #1193046/2>']"]
+            "<Account CUJFLXM6/0x151255dd9e38e44db38ea06ec66d0d113d6cbe37>: ['<Receipt #1193046/1>', '<Transaction #1193046/1>']",
+            "<Account FJS2ZJGV/0x2a65aca4d5fc5b5c859090a6c34d164135398226>: ['<Block #1193046>', '<Receipt #1193046/0>', '<Transaction #1193046/0>']",
+            "<Account NM5SYP4W/0x6b3b2c3f961b2c3f2593338858ca89fa4c0ca247>: ['<Receipt #1193046/2>', '<Transaction #1193046/2>']",
+            "<Account UXWYSEDK/0xa5ed89106ad81162f185e13b624838c693305a78>: ['<Receipt #1193046/1>', '<Transaction #1193046/1>']",
+            "<Account 3PF5L7BW/0xdbcbd5fc3693a8d6262b21376913c655d6e53c99>: ['<Receipt #1193046/0>', '<Transaction #1193046/0>']",
+            "<Account 7OY3OPCP/0xfbb1b73c4f0bda4f67dca266ce6ef42f520fbb98>: ['<Receipt #1193046/2>', '<Transaction #1193046/2>']"
+         ]
 
         self.maxDiff = None
         self.assertListEqual(accountStrs, expectedAccountStr)

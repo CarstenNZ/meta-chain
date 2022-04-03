@@ -43,19 +43,23 @@ class ChainData:
             list_new_line = new_line + '\t'
             elements = list_new_line.join(fmt_value(i) for i in list_)
             return f"[{list_new_line}{elements}{new_line}]"
+
         # <def
 
-        pretty_fmt = {
+        pretty_fmt = {  # TODO, make str(v) default
             str: lambda v: f"'{v}'",
             int: lambda v: str(v),
+            bool: lambda v: str(v),
             list: lambda v: fmt_list(v),
+            # dict: lambda v: breakpoint(), # ">>>{v}<<<",
             Transaction: lambda v: v.pretty(indent_level + 2),
+            Log: lambda v: v.pretty(indent_level + 2),
             Account: lambda v: str(v),
-            type(None): lambda v: "None"
+            type(None): lambda v: str(v)
         }
 
         fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
-        return f"{self.__class__.__name__}{new_line}{fields}"
+        return f"{self}{new_line}{fields}"
 
     def _ref_account(self, field, address):
         acc = Account.add_xref(address, self)
@@ -71,13 +75,8 @@ class Account(ChainData):
 
         super().__init__({})
         self.address = address
-        self.name = name or base64.b32encode(bytearray.fromhex(self.address[2:12])).decode()
+        self.name = name or Account._gen_default_name(address)
         self.xref: Set[ChainData] = set()
-
-    # @property
-    # def name(self):
-    #     """ short name for account """
-    #     return base64.b32encode(bytearray.fromhex(self.address[2:12])).decode()
 
     @staticmethod
     def get_account(address) -> 'Account':
@@ -99,6 +98,11 @@ class Account(ChainData):
         acc.xref.add(ref_data)
         return acc
 
+    @classmethod
+    def _gen_default_name(cls, address):
+        """ short name for account """
+        return base64.b32encode(bytearray.fromhex(address[2:12])).decode()
+
     def __str__(self):
         name = (self.name + '/') if self.name else ''
         return f"<{self.__class__.__name__} {name}{self.address}>"
@@ -110,8 +114,6 @@ class Transaction(ChainData):
 
     def __init__(self, data_dict):
         self.hash = ''
-        self.blockNumber = -1
-        self.transactionIndex = -1
         super().__init__(data_dict)
 
     def get_receipt(self, loader=None):
@@ -119,15 +121,27 @@ class Transaction(ChainData):
         return (loader or LoaderBase.Default_Loader).get_transaction_receipt(self.hash)
 
     def __str__(self):
-        return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
+        try:
+            # noinspection PyUnresolvedReferences
+            return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
+        except AttributeError:
+            return f"<{self.__class__.__name__}>"
+
+
+class Log(ChainData):
+    def __str__(self):
+        try:
+            # noinspection PyUnresolvedReferences
+            return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}/{self.logIndex}>"
+        except AttributeError:
+            return f"<{self.__class__.__name__}>"
 
 
 class Receipt(ChainData):
-    _AttrHandlers = {'from': ChainData._ref_account,
-                     'to': ChainData._ref_account}
-
     def __init__(self, data_dict):
         self.transactionHash = None
+        self.blockNumber = -1
+        self.transactionIndex = -1
         super().__init__(data_dict)
 
     # noinspection PyUnresolvedReferences
@@ -136,8 +150,15 @@ class Receipt(ChainData):
         block = (loader or LoaderBase.Default_Loader).get_block(self.blockNumber)
         return block.transactions[self.transactionIndex]
 
+    def _init_logs(self, key, val):
+        setattr(self, key, [Log(d) for d in val])
+
     def __str__(self):
-        return f"<{self.__class__.__name__} #{self.transactionHash}>"
+        return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
+
+    _AttrHandlers = {'from': ChainData._ref_account,
+                     'to': ChainData._ref_account,
+                     'logs': _init_logs}
 
 
 class Block(ChainData):
