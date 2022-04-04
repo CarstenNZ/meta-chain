@@ -47,7 +47,7 @@ class ChainData:
         # <def
 
         pretty_fmt = {
-            int: lambda v: format(v, '_'),
+            int: lambda v: format(v, ','),
             str: lambda v: f"'{v}'",
             list: lambda v: fmt_list(v),
             # dict: lambda v: breakpoint(), # ">>>{v}<<<",
@@ -120,7 +120,7 @@ class Transaction(ChainData):
     def __str__(self):
         try:
             # noinspection PyUnresolvedReferences
-            return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
+            return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
         except AttributeError:
             return f"<{self.__class__.__name__}>"
 
@@ -129,7 +129,7 @@ class Log(ChainData):
     def __str__(self):
         try:
             # noinspection PyUnresolvedReferences
-            return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}/{self.logIndex}>"
+            return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}/{self.logIndex:,}>"
         except AttributeError:
             return f"<{self.__class__.__name__}>"
 
@@ -151,7 +151,7 @@ class Receipt(ChainData):
         setattr(self, key, [Log(d) for d in val])
 
     def __str__(self):
-        return f"<{self.__class__.__name__} #{self.blockNumber}/{self.transactionIndex}>"
+        return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
 
     _AttrHandlers = {'from': ChainData._ref_account,
                      'to': ChainData._ref_account,
@@ -169,7 +169,7 @@ class Block(ChainData):
         setattr(self, key, [Transaction(d) for d in val])
 
     def __str__(self):
-        return f"<{self.__class__.__name__} #{self.number}>"
+        return f"<{self.__class__.__name__} #{self.number:,}>"
 
     _AttrHandlers = {'transactions': _init_transactions,
                      'miner': ChainData._ref_account}
