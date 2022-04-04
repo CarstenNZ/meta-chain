@@ -57,6 +57,8 @@ class Loader(LoaderBase):
             return obj
         # <def
 
+        assert not self.closed
+
         getter = 'get_' + attrib
         adder = 'add_' + attrib
 

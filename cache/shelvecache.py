@@ -35,10 +35,10 @@ class ShelveCache(Cache):
         return Block(block_src), block_src
 
     def add_transaction_receipt(self, receipt: Receipt, receipt_src: str):
-        self._shelve['r' + Hex.fmt(receipt.transactionHash)] = receipt_src
+        self._shelve['r' + receipt.transactionHash] = receipt_src
 
     def get_transaction_receipt(self, transaction_hash):
-        receipt_src = self._shelve.get('r' + Hex.fmt(transaction_hash))
+        receipt_src = self._shelve.get('r' + transaction_hash)
         if receipt_src is None:
             return None, None
 

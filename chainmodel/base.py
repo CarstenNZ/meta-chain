@@ -101,8 +101,7 @@ class Account(ChainData):
         return base64.b32encode(bytearray.fromhex(address[2:12])).decode()
 
     def __str__(self):
-        name = (self.name + '/') if self.name else ''
-        return f"<{self.__class__.__name__} {name}{self.address}>"
+        return f"<{self.__class__.__name__} {self.name}/{self.address}>"
 
 
 class Transaction(ChainData):

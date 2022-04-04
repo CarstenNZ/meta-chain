@@ -17,6 +17,8 @@ class LoaderBase(ABC):
     Default_Loader: Optional['LoaderBase'] = None
 
     def __init__(self):
+        self.closed = False
+
         # first loader becomes the default loader
         if LoaderBase.Default_Loader is None:
             LoaderBase.Default_Loader = self
@@ -54,4 +56,5 @@ class LoaderBase(ABC):
         if LoaderBase.Default_Loader == self:
             LoaderBase.Default_Loader = None
             self._All_Accounts.clear()
+        self.closed = True
 
