@@ -47,6 +47,7 @@ class ChainData:
         # <def
 
         pretty_fmt = {
+            int: lambda v: format(v, '_'),
             str: lambda v: f"'{v}'",
             list: lambda v: fmt_list(v),
             # dict: lambda v: breakpoint(), # ">>>{v}<<<",
