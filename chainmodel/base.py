@@ -6,7 +6,8 @@ from std_format import Hex
 
 
 class ChainData:
-    _AttrHandlers = {}
+    _Attr_Handlers = {}
+    _Pretty_Suppress = set()
 
     def __init__(self, data_dict, fix_addresses=False):
         """ generic init crates instance attributes from dict items
@@ -15,14 +16,14 @@ class ChainData:
         """
         for key, val in data_dict.items():
             # noinspection PyArgumentList,PyNoneFunctionAssignment
-            val = self.__class__._AttrHandlers.get(key, self.__class__.attr_default_handler)(self, val, fix_addresses)
+            val = self.__class__._Attr_Handlers.get(key, self.__class__.attr_default_handler)(self, val, fix_addresses)
             setattr(self, key, val)
 
     # noinspection PyMethodMayBeStatic
     def attr_default_handler(self, value: Any, _fix_addresses):
         return value
 
-    def pretty(self, indent_level=0):
+    def pretty(self, indent_level: int = 0, field_suppress: bool = False):
         """ return pretty formatted ChainData
         """
         new_line = '\n' + '\t' * (indent_level + 1)
@@ -48,11 +49,12 @@ class ChainData:
             str: lambda v: f"'{v}'",
             list: lambda v: fmt_list(v),
             # dict: lambda v: breakpoint(), # ">>>{v}<<<",
-            Transaction: lambda v: v.pretty(indent_level + 2),
-            Log: lambda v: v.pretty(indent_level + 2),
+            Transaction: lambda v: v.pretty(indent_level + 2, field_suppress),
+            Log: lambda v: v.pretty(indent_level + 2, field_suppress),
         }
 
-        fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items()))
+        fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items())
+                               if field_suppress is False or k not in self._Pretty_Suppress)
         return f"{self}{new_line}{fields}"
 
     def _ref_account(self, address, fix_addresses):
@@ -71,11 +73,13 @@ class ChainData:
 
 
 class Transaction(ChainData):
-    _AttrHandlers = {'from': ChainData._ref_account,
-                     'to': ChainData._ref_account,
-                     'type': ChainData._hex_string,
-                     'input': ChainData._hex_string,
-                     }
+    _Attr_Handlers = {'from': ChainData._ref_account,
+                      'to': ChainData._ref_account,
+                      'type': ChainData._hex_string,
+                      'input': ChainData._hex_string,
+                      }
+
+    _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}
 
     def __init__(self, data_dict, fix_addresses=False):
         self.hash = ''
@@ -94,8 +98,8 @@ class Transaction(ChainData):
 
 
 class Log(ChainData):
-    _AttrHandlers = {'data': ChainData._hex_string,
-                     }
+    _Attr_Handlers = {'data': ChainData._hex_string}
+    _Pretty_Suppress = {'blockHash', 'transactionHash'}
 
     def __str__(self):
         try:
@@ -106,6 +110,8 @@ class Log(ChainData):
 
 
 class Receipt(ChainData):
+    _Pretty_Suppress = {'blockHash', 'logsBloom', 'transactionHash'}
+
     def __init__(self, data_dict, fix_addresses=False):
         self.transactionHash = None
         self.blockNumber = -1
@@ -125,14 +131,16 @@ class Receipt(ChainData):
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
 
-    _AttrHandlers = {'from': ChainData._ref_account,
-                     'to': ChainData._ref_account,
-                     'type': ChainData._hex_string,
-                     'logs': _init_logs,
-                     }
+    _Attr_Handlers = {'from': ChainData._ref_account,
+                      'to': ChainData._ref_account,
+                      'type': ChainData._hex_string,
+                      'logs': _init_logs,
+                      }
 
 
 class Block(ChainData):
+    _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot', 'transactionsRoot'}
+
     # noinspection PyUnresolvedReferences
     def __init__(self, data_dict, fix_addresses=False):
         self.number = -1
@@ -146,10 +154,10 @@ class Block(ChainData):
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.number:,}>"
 
-    _AttrHandlers = {'transactions': _init_transactions,
-                     'miner': ChainData._ref_account,
-                     'nonce': ChainData._hex_string,              # leave it a hex string
-                     }
+    _Attr_Handlers = {'transactions': _init_transactions,
+                      'miner': ChainData._ref_account,
+                      'nonce': ChainData._hex_string,  # leave it a hex string
+                      }
 
 
 class Account(ChainData):
