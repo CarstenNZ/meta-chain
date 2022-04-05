@@ -5,7 +5,6 @@ from typing import Optional
 from cache.base import Cache
 from chainmodel.base import Block, Receipt
 from config import Config
-from std_format import Hex
 
 
 # noinspection PyUnresolvedReferences

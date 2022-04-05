@@ -15,6 +15,7 @@ class EtherscanIo(DataSource):
     }
 
     Block_Converter = {
+        'number': lambda v: int(v, 16),
         'totalDifficulty': lambda v: int(v, 16),
         'transactions': lambda v: [EtherscanIo._fix_itemTypes(e, EtherscanIo.Transaction_Converter) for e in v]
     }
@@ -33,12 +34,12 @@ class EtherscanIo(DataSource):
     def get_block(self, block_number: int):
         data_dict = self.get('proxy', 'eth_getBlockByNumber', tag=hex(block_number), boolean='true')
         block_src = self._fix_itemTypes(data_dict, EtherscanIo.Block_Converter)
-        return Block(block_src), block_src
+        return Block(block_src, fix_addresses=True), block_src
 
     def get_transaction_receipt(self, transaction_hash):
         data_dict = self.get('proxy', 'eth_getTransactionReceipt', txhash=transaction_hash)
         receipt_src = self._fix_itemTypes(data_dict, EtherscanIo.Receipt_Converter)
-        return Receipt(receipt_src), receipt_src
+        return Receipt(receipt_src, fix_addresses=True), receipt_src
 
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict
@@ -64,7 +65,7 @@ class EtherscanIo(DataSource):
                 return conv(val)
 
             # short hex become int
-            if isinstance(val, str) and Hex.isHexStr(val) and len(val) < 2 + 16:
+            if isinstance(val, str) and Hex.is_hex_addr(val) and len(val) < 2 + 16:
                 return int(val, 16)
 
             return val
