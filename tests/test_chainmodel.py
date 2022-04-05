@@ -84,12 +84,12 @@ class TestChainModel0x123456(unittest.TestCase):
 
         # noinspection SpellCheckingInspection
         expectedAccountStr = [
-            "<Account CUJFLXM6/0x151255dD9E38e44DB38EA06EC66D0D113D6cBe37>: ['<Receipt #1,193,046/1>', '<Transaction #1,193,046/1>']",
-            "<Account FJS2ZJGV/0x2a65Aca4D5fC5B5C859090a6c34d164135398226>: ['<Block #1,193,046>', '<Receipt #1,193,046/0>', '<Transaction #1,193,046/0>']",
-            "<Account NM5SYP4W/0x6B3B2c3F961b2c3F2593338858CA89fa4c0Ca247>: ['<Receipt #1,193,046/2>', '<Transaction #1,193,046/2>']",
-            "<Account 7OY3OPCP/0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98>: ['<Receipt #1,193,046/2>', '<Transaction #1,193,046/2>']",
-            "<Account UXWYSEDK/0xa5Ed89106aD81162F185E13B624838C693305A78>: ['<Receipt #1,193,046/1>', '<Transaction #1,193,046/1>']",
-            "<Account 3PF5L7BW/0xdBcbd5fc3693a8D6262b21376913c655D6E53C99>: ['<Receipt #1,193,046/0>', '<Transaction #1,193,046/0>']"]
+            "<Account @CUJFLXM6/0x151255dD9E38e44DB38EA06EC66D0D113D6cBe37>: ['<Receipt #1,193,046/1>', '<Transaction #1,193,046/1>']",
+            "<Account @FJS2ZJGV/0x2a65Aca4D5fC5B5C859090a6c34d164135398226>: ['<Block #1,193,046>', '<Receipt #1,193,046/0>', '<Transaction #1,193,046/0>']",
+            "<Account @NM5SYP4W/0x6B3B2c3F961b2c3F2593338858CA89fa4c0Ca247>: ['<Receipt #1,193,046/2>', '<Transaction #1,193,046/2>']",
+            "<Account @7OY3OPCP/0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98>: ['<Receipt #1,193,046/2>', '<Transaction #1,193,046/2>']",
+            "<Account @UXWYSEDK/0xa5Ed89106aD81162F185E13B624838C693305A78>: ['<Receipt #1,193,046/1>', '<Transaction #1,193,046/1>']",
+            "<Account @3PF5L7BW/0xdBcbd5fc3693a8D6262b21376913c655D6E53C99>: ['<Receipt #1,193,046/0>', '<Transaction #1,193,046/0>']"]
 
         self.maxDiff = None
         self.assertListEqual(accountStrs, expectedAccountStr)

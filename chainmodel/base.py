@@ -182,7 +182,7 @@ class Account(ChainData):
         return acc
 
     @classmethod
-    def _gen_default_name(cls, address, prefix='a'):
+    def _gen_default_name(cls, address, prefix='@'):
         """ short name for account
         """
         return prefix + base64.b32encode(bytearray.fromhex(address[2:12])).decode()
@@ -200,8 +200,8 @@ class Code(Account):
         self.bytes = bytearray.fromhex(code_bytes_str[2:])
 
     @classmethod
-    def _gen_default_name(cls, address, prefix='a'):
+    def _gen_default_name(cls, address, prefix='x'):
         """ short name for account
         """
-        return super()._gen_default_name(address, prefix='c')
+        return super()._gen_default_name(address, prefix)
 
