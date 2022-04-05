@@ -6,6 +6,7 @@ from config import Config
 from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
 from load.loader import Loader
+from std_format import Hex
 
 
 class TestLoader(unittest.TestCase):
@@ -38,3 +39,10 @@ class TestLoader(unittest.TestCase):
             receipt = loader.get_transaction_receipt(
                 '0xcb13faa6174ee9c1a21540cae32dd64ae6b3bc814b66ce5ed6843e65d112e391')
             assert receipt.blockHash == '0xb5e7f8b71f2ea15f001634a9f7657cd35d29898d56de57663de0e7ebc15b7b54'
+
+    def test_getCode(self):
+        loader = self.loaders['web3']
+        code = loader.get_code('0x514910771AF9Ca656af840dff83E8264EcF986CA')
+
+        self.assertTrue(Hex.is_hex_addr(code.address))
+        self.assertTrue(sum(code.bytes) == 274930)

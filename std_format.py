@@ -31,7 +31,7 @@ class Hex:
         """ returns hex_str in our standard non-address format (leading 0x, lowercase)
             - throws for invalid hex strings
         """
-        assert not Hex.is_hex_addr(hex_str)
+        assert not Hex.is_hex_addr(hex_str), f"{hex_str} looks like an address, fmt() destroys checksum"
 
         match = Hex.Hex_regex.fullmatch(hex_str)
         if not match:

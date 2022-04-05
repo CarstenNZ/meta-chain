@@ -5,7 +5,7 @@ from hexbytes import HexBytes
 from web3 import Web3
 from web3.datastructures import AttributeDict
 
-from chainmodel.base import Block, Receipt
+from chainmodel.base import Block, Receipt, Code
 from config import Config
 from datasource.base import DataSource
 from std_format import Hex
@@ -32,6 +32,10 @@ class WebThree(DataSource):
     def get_transaction_receipt(self, transaction_hash):
         receipt_src = self._convert_item(self.w3.eth.get_transaction_receipt(cast(HexStr, transaction_hash)))
         return Receipt(receipt_src), receipt_src
+
+    def get_code(self, contract_address):
+        code_bytes = self._convert_item(self.w3.eth.get_code(cast(HexStr, contract_address)))
+        return Code(contract_address, code_bytes), code_bytes
 
     def close(self):
         del self.w3

@@ -41,6 +41,9 @@ class EtherscanIo(DataSource):
         receipt_src = self._fix_itemTypes(data_dict, EtherscanIo.Receipt_Converter)
         return Receipt(receipt_src, fix_addresses=True), receipt_src
 
+    def get_code(self, contract_address):
+        assert False, "not available"
+
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict
         """

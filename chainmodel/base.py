@@ -70,44 +70,6 @@ class ChainData:
         return f"<{self.__class__.__name__}>"
 
 
-class Account(ChainData):
-    def __init__(self, address: str, name=None):
-        assert Hex.is_hex_addr(address)
-
-        super().__init__({})
-        self.address = address
-        self.name = name or Account._gen_default_name(address)
-        self.xref: Set[ChainData] = set()
-
-    @staticmethod
-    def get_account(address) -> 'Account':
-        """ returns Account for address
-            - creates if it doesn't exist yet
-        """
-        assert Hex.is_hex_addr(address)
-        acc = LoaderBase.get_account(address)
-        if acc is None:
-            name = LoaderBase.get_account_name(address)
-            acc = LoaderBase.add_account(Account(address, name))
-
-        return acc
-
-    @staticmethod
-    def add_xref(address: str, ref_data: ChainData) -> 'Account':
-        acc = Account.get_account(address)
-
-        acc.xref.add(ref_data)
-        return acc
-
-    @classmethod
-    def _gen_default_name(cls, address):
-        """ short name for account """
-        return base64.b32encode(bytearray.fromhex(address[2:12])).decode()
-
-    def __str__(self):
-        return f"<{self.__class__.__name__} {self.name}/{self.address}>"
-
-
 class Transaction(ChainData):
     _AttrHandlers = {'from': ChainData._ref_account,
                      'to': ChainData._ref_account,
@@ -188,3 +150,58 @@ class Block(ChainData):
                      'miner': ChainData._ref_account,
                      'nonce': ChainData._hex_string,              # leave it a hex string
                      }
+
+
+class Account(ChainData):
+    def __init__(self, address: str, name=None):
+        assert Hex.is_hex_addr(address)
+
+        super().__init__({})
+        self.address = address
+        self.name = name or self._gen_default_name(address)
+        self.xref: Set[ChainData] = set()
+
+    @staticmethod
+    def get_account(address) -> 'Account':
+        """ returns Account for address
+            - creates if it doesn't exist yet
+        """
+        assert Hex.is_hex_addr(address)
+        acc = LoaderBase.get_account(address)
+        if acc is None:
+            name = LoaderBase.get_account_name(address)
+            acc = LoaderBase.add_account(Account(address, name))
+
+        return acc
+
+    @staticmethod
+    def add_xref(address: str, ref_data: ChainData) -> 'Account':
+        acc = Account.get_account(address)
+
+        acc.xref.add(ref_data)
+        return acc
+
+    @classmethod
+    def _gen_default_name(cls, address, prefix='a'):
+        """ short name for account
+        """
+        return prefix + base64.b32encode(bytearray.fromhex(address[2:12])).decode()
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} {self.name}/{self.address}>"
+
+
+class Code(Account):
+    def __init__(self, code_address, code_bytes_str):
+        self.address = None
+        super().__init__(code_address)
+
+        Hex.is_hex(code_bytes_str)
+        self.bytes = bytearray.fromhex(code_bytes_str[2:])
+
+    @classmethod
+    def _gen_default_name(cls, address, prefix='a'):
+        """ short name for account
+        """
+        return super()._gen_default_name(address, prefix='c')
+

@@ -5,9 +5,10 @@ import yaml
 
 from cache.base import Cache
 from cache.memcache import MemCache
-from chainmodel.base import Receipt, Block
+from chainmodel.base import Receipt, Block, Code
 from datasource.base import DataSource
 from load.loaderbase import LoaderBase
+from std_format import Hex
 
 
 class Loader(LoaderBase):
@@ -39,7 +40,10 @@ class Loader(LoaderBase):
         return self.__get('block', block_number)
 
     def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
-        return self.__get('transaction_receipt', txhash)
+        return self.__get('transaction_receipt', Hex.fmt(txhash))
+
+    def get_code(self, contract_address) -> Code:
+        return self.__get('code', contract_address)
 
     def _get_account_name(self, address) -> Optional[str]:
         return self.acc_names.get(address)

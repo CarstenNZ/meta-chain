@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from cache.base import Cache
-from chainmodel.base import Block, Receipt
+from chainmodel.base import Block, Receipt, Code
 from config import Config
 
 
@@ -44,6 +44,16 @@ class ShelveCache(Cache):
         # noinspection PyTypeChecker
         receipt_src = dict(receipt_src)
         return Receipt(receipt_src), receipt_src
+
+    def add_code(self, code: Code, code_bytes: str):
+        self._shelve['c' + code.address] = code_bytes
+
+    def get_code(self, contract_address):
+        contract_src = self._shelve.get(f'c{contract_address}')
+        if contract_src is None:
+            return None, None
+
+        return Code(contract_address, contract_src), contract_src
 
     def close(self):
         if self._shelve:

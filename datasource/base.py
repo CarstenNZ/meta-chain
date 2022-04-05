@@ -17,5 +17,9 @@ class DataSource(ABC):
         pass
 
     @abstractmethod
+    def get_code(self, contract_address):
+        pass
+
+    @abstractmethod
     def close(self):
         pass
