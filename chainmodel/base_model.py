@@ -6,6 +6,8 @@ from std_format import Hex
 
 
 class ChainData:
+    _Account_Cls = None
+
     _Attr_Handlers = {}
     _Pretty_Suppress = set()
 
@@ -57,7 +59,7 @@ class ChainData:
         return f"{self}{new_line}{fields}"
 
     def _ref_account(self, address, fix_addresses):
-        acc = Account.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
+        acc = self._Account_Cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
         return self.attr_default_handler(acc, fix_addresses)
 
     # noinspection PyMethodMayBeStatic
@@ -72,14 +74,6 @@ class ChainData:
 
 
 class Transaction(ChainData):
-    _Attr_Handlers = {'from': ChainData._ref_account,
-                      'to': ChainData._ref_account,
-                      'type': ChainData._hex_string,
-                      'input': ChainData._hex_string,
-                      }
-
-    _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}
-
     def __init__(self, data_dict, fix_addresses=False):
         self.hash = ''
         super().__init__(data_dict, fix_addresses)
@@ -97,9 +91,6 @@ class Transaction(ChainData):
 
 
 class Log(ChainData):
-    _Attr_Handlers = {'data': ChainData._hex_string}
-    _Pretty_Suppress = {'blockHash', 'transactionHash'}
-
     def __str__(self):
         try:
             # noinspection PyUnresolvedReferences
@@ -109,8 +100,6 @@ class Log(ChainData):
 
 
 class Receipt(ChainData):
-    _Pretty_Suppress = {'blockHash', 'logsBloom', 'transactionHash'}
-
     def __init__(self, data_dict, fix_addresses=False):
         self.transactionHash = None
         self.blockNumber = -1
@@ -137,29 +126,6 @@ class Receipt(ChainData):
                       }
 
 
-class Block(ChainData):
-    _Transaction_Cls = Transaction
-    _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot', 'transactionsRoot'}
-
-    # noinspection PyUnresolvedReferences
-    def __init__(self, data_dict, fix_addresses=False):
-        self.number = -1
-        self.transactions: List[Transaction] = []
-        super().__init__(data_dict, fix_addresses=fix_addresses)
-
-    # noinspection PyMethodMayBeStatic
-    def _init_transactions(self, val, fix_addresses):
-        return [self._Transaction_Cls(d, fix_addresses) for d in val]
-
-    def __str__(self):
-        return f"<{self.__class__.__name__} #{self.number:,}>"
-
-    _Attr_Handlers = {'transactions': _init_transactions,
-                      'miner': ChainData._ref_account,
-                      'nonce': ChainData._hex_string,  # leave it a hex string
-                      }
-
-
 class Account(ChainData):
     def __init__(self, address: str, name=None):
         assert Hex.is_hex_addr(address)
@@ -169,8 +135,8 @@ class Account(ChainData):
         self.name = name or self._gen_default_name(address)
         self.xref: Set[ChainData] = set()
 
-    @staticmethod
-    def get_account(address) -> 'Account':
+    @classmethod
+    def get_account(cls, address) -> 'Account':
         """ returns Account for address
             - creates if it doesn't exist yet
         """
@@ -178,13 +144,13 @@ class Account(ChainData):
         acc = LoaderBase.get_account(address)
         if acc is None:
             name = LoaderBase.get_account_name(address)
-            acc = LoaderBase.add_account(Account(address, name))
+            acc = LoaderBase.add_account(cls(address, name))
 
         return acc
 
-    @staticmethod
-    def add_xref(address: str, ref_data: ChainData) -> 'Account':
-        acc = Account.get_account(address)
+    @classmethod
+    def add_xref(cls, address: str, ref_data: ChainData) -> 'Account':
+        acc = cls.get_account(address)
 
         acc.xref.add(ref_data)
         return acc
@@ -212,4 +178,24 @@ class Code(Account):
         """ short name for account
         """
         return super()._gen_default_name(address, prefix)
+
+
+class Block(ChainData):
+    _Account_Cls = Account
+    _Transaction_Cls = Transaction
+
+    # noinspection PyUnresolvedReferences
+    def __init__(self, data_dict, fix_addresses=False):
+        self.number = -1
+        self.transactions: List[Transaction] = []
+        super().__init__(data_dict, fix_addresses=fix_addresses)
+
+    # noinspection PyMethodMayBeStatic
+    def _init_transactions(self, val, fix_addresses):
+        return [self._Transaction_Cls(d, fix_addresses) for d in val]
+
+    def __str__(self):
+        return f"<{self.__class__.__name__} #{self.number:,}>"
+
+
 
