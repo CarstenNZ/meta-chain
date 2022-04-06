@@ -2,7 +2,8 @@ import os
 import unittest
 
 from cache.shelvecache import ShelveCache
-from chainmodel.base import Transaction, Block
+from chainmodel.base_model import Transaction
+from chainmodel.ethereum_model import EthereumBlock
 from config import Config
 from tests.test_chainmodel import TestChainModelWithoutLoader
 
@@ -11,13 +12,13 @@ class TestShelveCache(unittest.TestCase):
     def test_createShelfCache(self):
         config = Config(dict(cache=dict(path='/tmp/test.shelve')))
         block_src = TestChainModelWithoutLoader.Block_dict
-        block = Block(block_src)
+        block = EthereumBlock(block_src)
 
         with ShelveCache(config, clear=True) as db:
             db.add_block(block, block_src)
 
         with ShelveCache(config) as db:
-            cache_block, _ = db.get_block(block.number)
+            cache_block, _ = db.get_block(EthereumBlock, block.number)
 
         os.remove(config.get_cache_path())
 

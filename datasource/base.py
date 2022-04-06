@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
 
-from chainmodel.base import Block, Receipt
+from chainmodel.base_model import Block, Receipt
 
 
 class DataSource(ABC):
@@ -9,15 +9,15 @@ class DataSource(ABC):
     """
 
     @abstractmethod
-    def get_block(self, block_number: int) -> Tuple[Block, str]:
+    def get_block(self, block_cls, block_number: int) -> Tuple[Block, str]:
         pass
 
     @abstractmethod
-    def get_transaction_receipt(self, transaction_hash) -> Tuple[Receipt, str]:
+    def get_transaction_receipt(self, receipt_cls, transaction_hash) -> Tuple[Receipt, str]:
         pass
 
     @abstractmethod
-    def get_code(self, contract_address):
+    def get_code(self, contract_cls, contract_address):
         pass
 
     @abstractmethod

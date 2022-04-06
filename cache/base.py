@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from chainmodel.base import Block, Receipt, Code
+from chainmodel.base_model import Block, Receipt, Code
 from datasource.base import DataSource
 
 

@@ -48,7 +48,6 @@ class ChainData:
             int: lambda v: format(v, ','),
             str: lambda v: f"'{v}'",
             list: lambda v: fmt_list(v),
-            # dict: lambda v: breakpoint(), # ">>>{v}<<<",
             Transaction: lambda v: v.pretty(indent_level + 2, field_suppress),
             Log: lambda v: v.pretty(indent_level + 2, field_suppress),
         }
@@ -64,7 +63,7 @@ class ChainData:
     # noinspection PyMethodMayBeStatic
     def _hex_string(self, value, _fix_addresses):
         if Hex.is_hex(value):
-            return value
+            return value if len(value) > 2 else ''
 
         assert False
 
@@ -139,6 +138,7 @@ class Receipt(ChainData):
 
 
 class Block(ChainData):
+    _Transaction_Cls = Transaction
     _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot', 'transactionsRoot'}
 
     # noinspection PyUnresolvedReferences
@@ -149,7 +149,7 @@ class Block(ChainData):
 
     # noinspection PyMethodMayBeStatic
     def _init_transactions(self, val, fix_addresses):
-        return [Transaction(d, fix_addresses) for d in val]
+        return [self._Transaction_Cls(d, fix_addresses) for d in val]
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.number:,}>"

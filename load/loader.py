@@ -5,7 +5,8 @@ import yaml
 
 from cache.base import Cache
 from cache.memcache import MemCache
-from chainmodel.base import Receipt, Block, Code
+from chainmodel.base_model import Receipt, Block, Code
+from chainmodel.ethereum_model import EthereumBlock, EthereumTransaction, EthereumReceipt
 from datasource.base import DataSource
 from load.loaderbase import LoaderBase
 from std_format import Hex
@@ -28,6 +29,12 @@ class Loader(LoaderBase):
         else:
             self.acc_names = {}
 
+        # TODO, has to go in a specialization, e.g. EthereumLoader
+        self.block_cls = EthereumBlock
+        self.transaction_cls = EthereumTransaction
+        self.receipt_cls = EthereumReceipt
+        self.code_cls = Code
+
     def close(self):
         """ - only useful for testing
         """
@@ -37,18 +44,18 @@ class Loader(LoaderBase):
         super().close()
 
     def get_block(self, block_number: int) -> Block:
-        return self.__get('block', block_number)
+        return self.__get('block', self.block_cls, block_number)
 
     def get_transaction_receipt(self, txhash) -> Optional[Receipt]:
-        return self.__get('transaction_receipt', Hex.fmt(txhash))
+        return self.__get('transaction_receipt', self.receipt_cls, Hex.fmt(txhash))
 
     def get_code(self, contract_address) -> Code:
-        return self.__get('code', contract_address)
+        return self.__get('code', self.code_cls, contract_address)
 
     def _get_account_name(self, address) -> Optional[str]:
         return self.acc_names.get(address)
 
-    def __get(self, attrib, arg):
+    def __get(self, attrib, cls, arg):
         """ generic cache and data-source access method
         """
         def update_cache(hit_cache):
@@ -68,13 +75,13 @@ class Loader(LoaderBase):
 
         # check caches
         for cache in self.caches:
-            obj, obj_src = getattr(cache, getter)(arg)
+            obj, obj_src = getattr(cache, getter)(cls, arg)
             if obj:
                 return update_cache(cache)
 
         # from data sources
         for ds in self.data_sources:
-            obj, obj_src = getattr(ds, getter)(arg)
+            obj, obj_src = getattr(ds, getter)(cls, arg)
             if obj:
                 return update_cache(None)
 

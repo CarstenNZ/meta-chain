@@ -1,5 +1,6 @@
 import unittest
 
+from chainmodel.ethereum_model import EthereumBlock
 from config import Config
 from datasource.web3 import WebThree
 
@@ -17,7 +18,7 @@ class TestWeb3(unittest.TestCase):
         cls.w3.close()
 
     def test_blockRequest(self):
-        block, block_src = self.w3.get_block(0x123456)
+        block, block_src = self.w3.get_block(EthereumBlock, 0x123456)
         # noinspection PyUnresolvedReferences
         assert block.extraData == '0xd783010305844765746887676f312e352e31856c696e7578'
 

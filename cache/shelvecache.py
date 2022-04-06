@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from cache.base import Cache
-from chainmodel.base import Block, Receipt, Code
+from chainmodel.base_model import Block, Receipt, Code
 from config import Config
 
 
@@ -24,31 +24,31 @@ class ShelveCache(Cache):
     def add_block(self, block: Block, block_src: str):
         self._shelve[f'b{block.number}'] = block_src
 
-    def get_block(self, block_number: int):
+    def get_block(self, block_cls, block_number: int):
         block_src = self._shelve.get(f'b{block_number}')
         if block_src is None:
             return None, None
 
         # noinspection PyTypeChecker
         block_src = dict(block_src)
-        return Block(block_src), block_src
+        return block_cls(block_src), block_src
 
     def add_transaction_receipt(self, receipt: Receipt, receipt_src: str):
         self._shelve['r' + receipt.transactionHash] = receipt_src
 
-    def get_transaction_receipt(self, transaction_hash):
+    def get_transaction_receipt(self, receipt_cls, transaction_hash):
         receipt_src = self._shelve.get('r' + transaction_hash)
         if receipt_src is None:
             return None, None
 
         # noinspection PyTypeChecker
         receipt_src = dict(receipt_src)
-        return Receipt(receipt_src), receipt_src
+        return receipt_cls(receipt_src), receipt_src
 
     def add_code(self, code: Code, code_bytes: str):
         self._shelve['c' + code.address] = code_bytes
 
-    def get_code(self, contract_address):
+    def get_code(self, contract_cls, contract_address):
         contract_src = self._shelve.get(f'c{contract_address}')
         if contract_src is None:
             return None, None
