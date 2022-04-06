@@ -18,12 +18,8 @@ class ChainData:
         """
         for key, val in data_dict.items():
             # noinspection PyArgumentList,PyNoneFunctionAssignment
-            val = self.__class__._Attr_Handlers.get(key, self.__class__.attr_default_handler)(self, val, fix_addresses)
+            val = self.__class__._Attr_Handlers.get(key, self.__class__._attr_default_handler)(self, val, fix_addresses)
             setattr(self, key, val)
-
-    # noinspection PyMethodMayBeStatic
-    def attr_default_handler(self, value: Any, _fix_addresses):
-        return value
 
     def pretty(self, indent_level: int = 0, field_suppress: bool = False):
         """ return pretty formatted ChainData
@@ -58,12 +54,16 @@ class ChainData:
                                if field_suppress is False or k not in self._Pretty_Suppress)
         return f"{self}{new_line}{fields}"
 
-    def _ref_account(self, address, fix_addresses):
+    # noinspection PyMethodMayBeStatic
+    def _attr_default_handler(self, value: Any, _fix_addresses):
+        return value
+
+    def _attr_ref_account(self, address, fix_addresses):
         acc = self._Account_Cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
-        return self.attr_default_handler(acc, fix_addresses)
+        return self._attr_default_handler(acc, fix_addresses)
 
     # noinspection PyMethodMayBeStatic
-    def _hex_string(self, value, _fix_addresses):
+    def _attr_hex_string(self, value, _fix_addresses):
         if Hex.is_hex(value):
             return value if len(value) > 2 else ''
 
@@ -113,16 +113,16 @@ class Receipt(ChainData):
         return block.transactions[self.transactionIndex]
 
     # noinspection PyMethodMayBeStatic
-    def _init_logs(self, val, _fix_addresses):
+    def _attr_init_logs(self, val, _fix_addresses):
         return [Log(d) for d in val]
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
 
-    _Attr_Handlers = {'from': ChainData._ref_account,
-                      'to': ChainData._ref_account,
-                      'type': ChainData._hex_string,
-                      'logs': _init_logs,
+    _Attr_Handlers = {'from': ChainData._attr_ref_account,
+                      'to': ChainData._attr_ref_account,
+                      'type': ChainData._attr_hex_string,
+                      'logs': _attr_init_logs,
                       }
 
 
@@ -191,7 +191,7 @@ class Block(ChainData):
         super().__init__(data_dict, fix_addresses=fix_addresses)
 
     # noinspection PyMethodMayBeStatic
-    def _init_transactions(self, val, fix_addresses):
+    def _attr_init_transactions(self, val, fix_addresses):
         return [self._Transaction_Cls(d, fix_addresses) for d in val]
 
     def __str__(self):

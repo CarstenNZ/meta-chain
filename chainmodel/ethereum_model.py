@@ -12,17 +12,17 @@ class EthereumCode(Code):
 class EthereumTransaction(Transaction):
     _Account_Cls = EthereumAccount
 
-    _Attr_Handlers = {'from': ChainData._ref_account,
-                      'to': ChainData._ref_account,
-                      'type': ChainData._hex_string,
-                      'input': ChainData._hex_string,
+    _Attr_Handlers = {'from': ChainData._attr_ref_account,
+                      'to': ChainData._attr_ref_account,
+                      'type': ChainData._attr_hex_string,
+                      'input': ChainData._attr_hex_string,
                       }
 
     _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}
 
 
 class EthereumLog(Log):
-    _Attr_Handlers = {'data': ChainData._hex_string}
+    _Attr_Handlers = {'data': ChainData._attr_hex_string}
     _Pretty_Suppress = {'blockHash', 'transactionHash'}
 
 
@@ -35,9 +35,9 @@ class EthereumBlock(Block):
     _Transaction_Cls = EthereumTransaction
     _Account_Cls = EthereumAccount
 
-    _Attr_Handlers = {'transactions': Block._init_transactions,
-                      'miner': ChainData._ref_account,
-                      'nonce': ChainData._hex_string,  # leave it a hex string
+    _Attr_Handlers = {'transactions': Block._attr_init_transactions,
+                      'miner': ChainData._attr_ref_account,
+                      'nonce': ChainData._attr_hex_string,  # leave it a hex string
                       }
 
     _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot',
