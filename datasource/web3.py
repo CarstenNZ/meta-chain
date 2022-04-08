@@ -33,7 +33,7 @@ class WebThree(DataSource):
         receipt_src = self._convert_item(self.w3.eth.get_transaction_receipt(cast(HexStr, transaction_hash)))
         return receipt_cls(receipt_src), receipt_src
 
-    def get_code(self, contract_cls, contract_address):
+    def get_code(self, code_cls, contract_address):
         code_bytes = self._convert_item(self.w3.eth.get_code(cast(HexStr, contract_address)))
         return Code(contract_address, code_bytes), code_bytes
 

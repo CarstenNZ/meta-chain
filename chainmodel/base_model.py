@@ -1,5 +1,5 @@
 import base64
-from typing import List, Set, Any
+from typing import Set, Any
 
 from load.loaderbase import LoaderBase
 from std_format import Hex
@@ -20,6 +20,12 @@ class ChainData:
             # noinspection PyArgumentList,PyNoneFunctionAssignment
             val = self.__class__._Attr_Handlers.get(key, self.__class__._attr_default_handler)(self, val, fix_addresses)
             setattr(self, key, val)
+
+    def assert_(self) -> None:
+        """ should never fail, basic assumption broken
+            - use assert inside for easier debugging
+        """
+        pass
 
     def pretty(self, indent_level: int = 0, field_suppress: bool = False):
         """ return pretty formatted ChainData
@@ -106,6 +112,9 @@ class Receipt(ChainData):
         self.transactionIndex = -1
         super().__init__(data_dict, fix_addresses)
 
+    def assert_(self):
+        assert self.transactionHash is not None and self.blockNumber >= 0 and self.transactionIndex >= 0
+
     # noinspection PyUnresolvedReferences
     def get_transaction(self, loader=None):
         assert (loader or LoaderBase.Default_Loader), "needs explicit loader argument or active (default) Loader"
@@ -118,12 +127,6 @@ class Receipt(ChainData):
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
-
-    _Attr_Handlers = {'from': ChainData._attr_ref_account,
-                      'to': ChainData._attr_ref_account,
-                      'type': ChainData._attr_hex_string,
-                      'logs': _attr_init_logs,
-                      }
 
 
 class Account(ChainData):

@@ -28,7 +28,22 @@ class EthereumLog(Log):
 
 class EthereumReceipt(Receipt):
     _Account_Cls = EthereumAccount
+
+    _Attr_Handlers = {'from': ChainData._attr_ref_account,
+                      'to': ChainData._attr_ref_account,
+                      'type': ChainData._attr_hex_string,
+                      'logs': Receipt._attr_init_logs,
+                      }
+
     _Pretty_Suppress = {'blockHash', 'logsBloom', 'transactionHash'}
+
+    def __init__(self, data_dict, fix_addresses=False):
+        self.logs = None
+        super().__init__(data_dict, fix_addresses)
+
+    def assert_(self):
+        super().assert_()
+        [log.assert_() for log in self.logs]
 
 
 class EthereumBlock(Block):
@@ -42,3 +57,11 @@ class EthereumBlock(Block):
 
     _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot',
                         'transactionsRoot'}
+
+    # def __init__(self, data_dict, fix_addresses=False):
+    #     super().__init__(data_dict, fix_addresses)
+
+    def assert_(self):
+        # noinspection PyArgumentList
+        super().assert_()
+        [trans.assert_() for trans in self.transactions]

@@ -25,7 +25,7 @@ class MemCache(Cache):
     def add_code(self, code: Code, code_bytes: str):
         self._codes[code.address] = code
 
-    def get_code(self, contract_cls, contract_address):
+    def get_code(self, code_cls, contract_address):
         return self._codes.get(contract_address), None
 
     def close(self):
