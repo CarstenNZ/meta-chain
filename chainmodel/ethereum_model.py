@@ -1,3 +1,5 @@
+from typing import Optional, Dict
+
 from chainmodel.base_model import Block, Transaction, Log, Receipt, ChainData, Account, Code
 
 
@@ -65,3 +67,11 @@ class EthereumBlock(Block):
         # noinspection PyArgumentList
         super().assert_()
         [trans.assert_() for trans in self.transactions]
+
+    def pretty(self, indent_level: int = 0, field_suppress: bool = False, pretty_fmt_override: Optional[Dict] = None):
+        pretty_fmt_override = {
+            EthereumTransaction: lambda v: v.pretty(indent_level + 1, field_suppress),
+            **(pretty_fmt_override or {})
+        }
+
+        return super().pretty(indent_level, field_suppress, pretty_fmt_override)

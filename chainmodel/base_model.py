@@ -1,5 +1,5 @@
 import base64
-from typing import Set, Any
+from typing import Set, Any, Optional, Dict
 
 from load.loaderbase import LoaderBase
 from std_format import Hex
@@ -27,10 +27,11 @@ class ChainData:
         """
         pass
 
-    def pretty(self, indent_level: int = 0, field_suppress: bool = False):
+    def pretty(self, indent_level: int = 0, field_suppress: bool = False,
+               pretty_fmt_override: Optional[Dict] = None):
         """ return pretty formatted ChainData
         """
-        new_line = '\n' + '\t' * (indent_level + 1)
+        new_line = '\n' + '\t' * (2 * indent_level + 1)
 
         def fmt_value(value):
             return pretty_fmt.get(type(value), str)(value)
@@ -52,8 +53,8 @@ class ChainData:
             int: lambda v: format(v, ','),
             str: lambda v: f"'{v}'",
             list: lambda v: fmt_list(v),
-            Transaction: lambda v: v.pretty(indent_level + 2, field_suppress),
-            Log: lambda v: v.pretty(indent_level + 2, field_suppress),
+            Log: lambda v: v.pretty(indent_level + 1, field_suppress),
+            **(pretty_fmt_override or {})
         }
 
         fields = new_line.join(fmt_field(k, v) for k, v in sorted(vars(self).items())
