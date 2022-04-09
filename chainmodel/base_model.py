@@ -5,6 +5,7 @@ from load.loaderbase import LoaderBase
 from std_format import Hex
 
 
+# noinspection PyMethodMayBeStatic
 class ChainData:
     _Account_Cls = None
 
@@ -61,7 +62,6 @@ class ChainData:
                                if field_suppress is False or k not in self._Pretty_Suppress)
         return f"{self}{new_line}{fields}"
 
-    # noinspection PyMethodMayBeStatic
     def _attr_default_handler(self, value: Any, _fix_addresses):
         return value
 
@@ -69,12 +69,14 @@ class ChainData:
         acc = self._Account_Cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
         return self._attr_default_handler(acc, fix_addresses)
 
-    # noinspection PyMethodMayBeStatic
     def _attr_hex_string(self, value, _fix_addresses):
         if Hex.is_hex(value):
             return value if len(value) > 2 else ''
 
         assert False
+
+    def _attr_hex_to_int(self, value, _fix_addresses):
+        return Hex.hex_to_int(value)
 
     def __str__(self):
         return f"<{self.__class__.__name__}>"

@@ -27,6 +27,11 @@ class Hex:
         return isinstance(hex_str, str) and Hex.Hex_regex.fullmatch(hex_str) is not None
 
     @staticmethod
+    def hex_to_int(hex_str: str) -> int:
+        assert Hex.is_hex(hex_str)
+        return int(hex_str, 16)
+
+    @staticmethod
     def fmt(hex_str: str):
         """ returns hex_str in our standard non-address format (leading 0x, lowercase)
             - throws for invalid hex strings

@@ -1,6 +1,19 @@
+from enum import Enum
 from typing import Optional, Dict
 
 from chainmodel.base_model import Block, Transaction, Log, Receipt, ChainData, Account, Code
+from std_format import Hex
+
+
+class EthereumTransactionType(Enum):
+    # see https://eips.ethereum.org/EIPS/eip-1559
+    Legacy  = 0
+    EIP2930 = 1
+    EIP1559 = 2
+
+    @staticmethod
+    def from_type_field(type_str: str):
+        return EthereumTransactionType(Hex.hex_to_int(type_str))
 
 
 class EthereumAccount(Account):
@@ -11,16 +24,36 @@ class EthereumCode(Code):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class EthereumTransaction(Transaction):
+
     _Account_Cls = EthereumAccount
 
     _Attr_Handlers = {'from': ChainData._attr_ref_account,
                       'to': ChainData._attr_ref_account,
-                      'type': ChainData._attr_hex_string,
+                      'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
+                      'chainId': ChainData._attr_hex_to_int,
                       'input': ChainData._attr_hex_string,
                       }
 
     _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}
+
+    def __init__(self, data_dict, fix_addresses=False):
+        self.input = ''
+        super().__init__(data_dict, fix_addresses)
+
+    def assert_(self):
+        super().assert_()
+        assert isinstance(self.type, EthereumTransactionType)
+        assert self.type == EthereumTransactionType.Legacy or (hasattr(self, 'chainId') and self.chainId == 1)
+
+    @property
+    def is_contract_call(self):
+        return bool(self.input)
+
+    # TODO
+    # def is_contract_creation
+    #     xxx
 
 
 class EthereumLog(Log):
@@ -28,12 +61,13 @@ class EthereumLog(Log):
     _Pretty_Suppress = {'blockHash', 'transactionHash'}
 
 
+# noinspection PyUnresolvedReferences
 class EthereumReceipt(Receipt):
     _Account_Cls = EthereumAccount
 
     _Attr_Handlers = {'from': ChainData._attr_ref_account,
                       'to': ChainData._attr_ref_account,
-                      'type': ChainData._attr_hex_string,
+                      'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
                       'logs': Receipt._attr_init_logs,
                       }
 
@@ -45,6 +79,7 @@ class EthereumReceipt(Receipt):
 
     def assert_(self):
         super().assert_()
+        assert isinstance(self.type, EthereumTransactionType)
         [log.assert_() for log in self.logs]
 
 
