@@ -12,4 +12,4 @@ uniform Ethereum data model and access layer
 
 ### Generic Data Model
 
-![2022-03-25-02-06-16-image.png](./drawings/2022-03-25-02-06-16-image.png)
+![uml.png](./drawings/uml.png)
