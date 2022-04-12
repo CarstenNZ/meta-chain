@@ -1,5 +1,5 @@
 from cache.base import Cache
-from chainmodel.base_model import Block, Receipt, Code
+from chainmodel.base_model import Block, Receipt, Contract
 
 
 # noinspection PyUnresolvedReferences
@@ -22,7 +22,7 @@ class MemCache(Cache):
     def get_transaction_receipt(self, receipt_cls, transaction_hash):
         return self._receipts.get(transaction_hash), None
 
-    def add_code(self, code: Code, code_bytes: str):
+    def add_code(self, code: Contract, code_bytes: str):
         self._codes[code.address] = code
 
     def get_code(self, code_cls, contract_address):

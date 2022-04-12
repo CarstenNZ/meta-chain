@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Dict
 
-from chainmodel.base_model import Block, Transaction, Log, Receipt, ChainData, Account, Code
+from chainmodel.base_model import Block, Transaction, Log, Receipt, ChainData, EOAccount, Contract
 from std_format import Hex
 
 
@@ -16,21 +16,21 @@ class EthereumTransactionType(Enum):
         return EthereumTransactionType(Hex.hex_to_int(type_str))
 
 
-class EthereumAccount(Account):
+class EthereumEOA(EOAccount):
     pass
 
 
-class EthereumCode(Code):
+class EthereumContract(Contract):
     pass
 
 
 # noinspection PyUnresolvedReferences
 class EthereumTransaction(Transaction):
+    _Account_Cls  = EthereumEOA
+    _Contract_Cls = EthereumContract
 
-    _Account_Cls = EthereumAccount
-
-    _Attr_Handlers = {'from': ChainData._attr_ref_account,
-                      'to': ChainData._attr_ref_account,
+    _Attr_Handlers = {'from': ChainData._attr_ref_account,                      # uses default, always EOA account
+                      'to': lambda self, *args: self._attr_ref_account(*args),  # can use override, e.g. EthereumTransaction
                       'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
                       'chainId': ChainData._attr_hex_to_int,
                       'input': ChainData._attr_hex_string,
@@ -55,6 +55,14 @@ class EthereumTransaction(Transaction):
     # def is_contract_creation
     #     xxx
 
+    def _attr_ref_account(self, address, fix_addresses):
+        """ get/create the account and adds a cross-reference from the account to self
+            - this version differentiates between contract and EOA accounts
+        """
+        cls = self._Contract_Cls if self.is_contract_call else self._Account_Cls
+        acc = cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
+        return self._attr_default_handler(acc, fix_addresses)
+
 
 class EthereumLog(Log):
     _Attr_Handlers = {'data': ChainData._attr_hex_string}
@@ -63,7 +71,7 @@ class EthereumLog(Log):
 
 # noinspection PyUnresolvedReferences
 class EthereumReceipt(Receipt):
-    _Account_Cls = EthereumAccount
+    _Account_Cls = EthereumEOA
 
     _Attr_Handlers = {'from': ChainData._attr_ref_account,
                       'to': ChainData._attr_ref_account,
@@ -85,7 +93,7 @@ class EthereumReceipt(Receipt):
 
 class EthereumBlock(Block):
     _Transaction_Cls = EthereumTransaction
-    _Account_Cls = EthereumAccount
+    _Account_Cls = EthereumEOA
 
     _Attr_Handlers = {'transactions': Block._attr_init_transactions,
                       'miner': ChainData._attr_ref_account,

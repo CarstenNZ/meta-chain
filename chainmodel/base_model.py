@@ -66,6 +66,9 @@ class ChainData:
         return value
 
     def _attr_ref_account(self, address, fix_addresses):
+        """ get/create the account and adds a cross-reference from the account to self
+            - this version assumes that the account is an EOA account
+        """
         acc = self._Account_Cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
         return self._attr_default_handler(acc, fix_addresses)
 
@@ -132,7 +135,14 @@ class Receipt(ChainData):
         return f"<{self.__class__.__name__} #{self.blockNumber:,}/{self.transactionIndex:,}>"
 
 
-class Account(ChainData):
+class Code:
+    def __init__(self, contract_address, code_bytes_str):
+        assert Hex.is_hex(code_bytes_str)
+        self.address = contract_address
+        self.bytes = bytearray.fromhex(code_bytes_str[2:])
+
+
+class EOAccount(ChainData):
     def __init__(self, address: str, name=None):
         assert Hex.is_hex_addr(address)
 
@@ -142,8 +152,8 @@ class Account(ChainData):
         self.xref: Set[ChainData] = set()
 
     @classmethod
-    def get_account(cls, address) -> 'Account':
-        """ returns Account for address
+    def get_account(cls, address) -> 'EOAccount':
+        """ returns EOA_Account for address
             - creates if it doesn't exist yet
         """
         assert Hex.is_hex_addr(address)
@@ -155,7 +165,7 @@ class Account(ChainData):
         return acc
 
     @classmethod
-    def add_xref(cls, address: str, ref_data: ChainData) -> 'Account':
+    def add_xref(cls, address: str, ref_data: ChainData) -> 'EOAccount':
         acc = cls.get_account(address)
 
         acc.xref.add(ref_data)
@@ -171,13 +181,26 @@ class Account(ChainData):
         return f"<{self.__class__.__name__} {self.name}/{self.address}>"
 
 
-class Code(Account):
-    def __init__(self, code_address, code_bytes_str):
-        self.address = None
-        super().__init__(code_address)
+class Contract(EOAccount):
+    def __init__(self, code_address, name=None):
+        self.address = ''
+        super().__init__(code_address, name)
 
-        Hex.is_hex(code_bytes_str)
-        self.bytes = bytearray.fromhex(code_bytes_str[2:])
+        # Hex.is_hex(code_bytes_str)
+        # self.bytes = bytearray.fromhex(code_bytes_str[2:])
+
+    # @classmethod
+    # def get_account(cls, address) -> 'Contract':
+    #     """ returns Contract for address
+    #         - creates if it doesn't exist yet, loads code
+    #     """
+    #     assert Hex.is_hex_addr(address)
+    #     acc = LoaderBase.get_account(address)
+    #     if acc is None:
+    #         name = LoaderBase.get_account_name(address)
+    #         acc = LoaderBase.add_account(cls(address, name))
+    #
+    #     return acc
 
     @classmethod
     def _gen_default_name(cls, address, prefix='x'):
@@ -187,7 +210,7 @@ class Code(Account):
 
 
 class Block(ChainData):
-    _Account_Cls = Account
+    _Account_Cls = EOAccount
     _Transaction_Cls = Transaction
 
     # noinspection PyUnresolvedReferences

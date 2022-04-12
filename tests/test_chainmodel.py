@@ -84,12 +84,12 @@ class TestChainModel0x123456(unittest.TestCase):
 
         # noinspection SpellCheckingInspection
         expectedAccountStr = [
-            "<EthereumAccount @CUJFLXM6/0x151255dD9E38e44DB38EA06EC66D0D113D6cBe37>: ['<EthereumReceipt #1,193,046/1>', '<EthereumTransaction #1,193,046/1>']",
-            "<EthereumAccount @FJS2ZJGV/0x2a65Aca4D5fC5B5C859090a6c34d164135398226>: ['<EthereumBlock #1,193,046>', '<EthereumReceipt #1,193,046/0>', '<EthereumTransaction #1,193,046/0>']",
-            "<EthereumAccount @NM5SYP4W/0x6B3B2c3F961b2c3F2593338858CA89fa4c0Ca247>: ['<EthereumReceipt #1,193,046/2>', '<EthereumTransaction #1,193,046/2>']",
-            "<EthereumAccount @7OY3OPCP/0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98>: ['<EthereumReceipt #1,193,046/2>', '<EthereumTransaction #1,193,046/2>']",
-            "<EthereumAccount @UXWYSEDK/0xa5Ed89106aD81162F185E13B624838C693305A78>: ['<EthereumReceipt #1,193,046/1>', '<EthereumTransaction #1,193,046/1>']",
-            "<EthereumAccount @3PF5L7BW/0xdBcbd5fc3693a8D6262b21376913c655D6E53C99>: ['<EthereumReceipt #1,193,046/0>', '<EthereumTransaction #1,193,046/0>']"]
+            "<EthereumEOA @CUJFLXM6/0x151255dD9E38e44DB38EA06EC66D0D113D6cBe37>: ['<EthereumReceipt #1,193,046/1>', '<EthereumTransaction #1,193,046/1>']",
+            "<EthereumEOA @FJS2ZJGV/0x2a65Aca4D5fC5B5C859090a6c34d164135398226>: ['<EthereumBlock #1,193,046>', '<EthereumReceipt #1,193,046/0>', '<EthereumTransaction #1,193,046/0>']",
+            "<EthereumEOA @NM5SYP4W/0x6B3B2c3F961b2c3F2593338858CA89fa4c0Ca247>: ['<EthereumReceipt #1,193,046/2>', '<EthereumTransaction #1,193,046/2>']",
+            "<EthereumEOA @7OY3OPCP/0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98>: ['<EthereumReceipt #1,193,046/2>', '<EthereumTransaction #1,193,046/2>']",
+            "<EthereumEOA @UXWYSEDK/0xa5Ed89106aD81162F185E13B624838C693305A78>: ['<EthereumReceipt #1,193,046/1>', '<EthereumTransaction #1,193,046/1>']",
+            "<EthereumEOA @3PF5L7BW/0xdBcbd5fc3693a8D6262b21376913c655D6E53C99>: ['<EthereumReceipt #1,193,046/0>', '<EthereumTransaction #1,193,046/0>']"]
 
         self.maxDiff = None
         self.assertListEqual(accountStrs, expectedAccountStr)

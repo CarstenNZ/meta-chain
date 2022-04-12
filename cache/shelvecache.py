@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from cache.base import Cache
-from chainmodel.base_model import Block, Receipt, Code
+from chainmodel.base_model import Block, Receipt, Contract, Code
 from config import Config
 
 
@@ -49,7 +49,7 @@ class ShelveCache(Cache):
         receipt_src = dict(receipt_src)
         return receipt_cls(receipt_src), receipt_src
 
-    def add_code(self, code: Code, code_bytes: str):
+    def add_code(self, code: Contract, code_bytes: str):
         self._shelve[self._Code_Prefix + code.address] = code_bytes
 
     def get_code(self, code_cls, contract_address):

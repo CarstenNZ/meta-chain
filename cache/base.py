@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from chainmodel.base_model import Block, Receipt, Code
+from chainmodel.base_model import Block, Receipt, Contract
 from datasource.base import DataSource
 
 
@@ -17,6 +17,6 @@ class Cache(DataSource):
         pass
 
     @abstractmethod
-    def add_code(self, code: Code, code_bytes: str):
+    def add_code(self, code: Contract, code_bytes: str):
         pass
 
