@@ -182,9 +182,9 @@ class EOAccount(ChainData):
 
 
 class Contract(EOAccount):
-    def __init__(self, code_address, name=None):
+    def __init__(self, contract_address, name=None):
         self.address = ''
-        super().__init__(code_address, name)
+        super().__init__(contract_address, name)
 
         # Hex.is_hex(code_bytes_str)
         # self.bytes = bytearray.fromhex(code_bytes_str[2:])

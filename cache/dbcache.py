@@ -2,7 +2,7 @@ import json
 import sqlite3
 import zlib
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 from cache.base import Cache
 from chainmodel.base_model import Block, Receipt, Contract, Code
@@ -19,9 +19,9 @@ class Sqlite:
         self.cur.execute("CREATE TABLE IF NOT EXISTS key_value (key STRING PRIMARY KEY ASC, value STRING, compress BOOL);")
         self.con.commit()
 
-    def add(self, key: str, value: Union[str, bytes]):
-        if not isinstance(value, (str, bytes)):
-            raise Exception("wrong type")
+    def add(self, key: str, value: str):
+        if not isinstance(value, str):
+            raise Exception("accepts str only")
 
         if compress := len(value) > 1024:
             value = zlib.compress(value.encode(), 3)
@@ -35,7 +35,7 @@ class Sqlite:
             return None
 
         value, compress = res
-        return zlib.decompress(value) if compress else value
+        return zlib.decompress(value).decode() if compress else value
 
     def close(self):
         self.con.commit()

@@ -8,13 +8,6 @@
       <jdbc-url>jdbc:sqlite:/mnt/hgfs/projects/metachain/../../../../tmp/sqlite-test.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="test.shelve" uuid="aacce471-9e8e-48c3-81e6-c14790d688fe">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:/tmp/test.shelve</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="0x123456.cache.db" uuid="1fb8c6aa-d616-4f59-acc8-1b86a07d21fa">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
@@ -22,17 +15,12 @@
       <jdbc-url>jdbc:sqlite:/tmp/0x123456.cache.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="web3" uuid="d7d45220-e1dc-48e7-9c1d-5cc3167b37dc">
+    <data-source source="LOCAL" name="web3.cache.db" uuid="e9474457-5d1f-4c7c-8bc4-fe8bd96e8e93">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:/tmp/web3.shelve</jdbc-url>
+      <jdbc-url>jdbc:sqlite:/tmp/web3.cache.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.36.0.3/sqlite-jdbc-3.36.0.3.jar</url>
-        </library>
-      </libraries>
     </data-source>
   </component>
 </project>
