@@ -1,5 +1,5 @@
 cache:
-    path: 'data/0x123456.shelve.cache'    # assumes working dir is .../metachain/tests
+    path: 'data/0x123456.cache.db'    # assumes working dir is .../metachain/tests
 
 #datasource:
 #    etherscan.io:

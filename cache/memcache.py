@@ -9,7 +9,7 @@ class MemCache(Cache):
         self._receipts = {}
         self._codes = {}
 
-    def add_block(self, block: Block, block_src: str):
+    def add_block(self, block: Block, _block_dict: dict):
         assert type(block.number) is int
         self._blocks[block.number] = block
 

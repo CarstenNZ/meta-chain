@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from cache.shelvecache import ShelveCache
+from cache.dbcache import DBCache
 from config import Config
 # from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
@@ -17,7 +17,7 @@ def main():
 
     # create loader, this will fail without api keys in your config
     data_source = WebThree(config)      # or use EtherscanIo(config)
-    with Loader([data_source], ShelveCache(config, explicit_path='/tmp/web3.shelve'),
+    with Loader([data_source], DBCache(config, explicit_path='/tmp/0x123456.cache.db'),
                 Path('../tests/data/known_accounts.yaml')) as loader:
 
         # load the same block twice

@@ -1,6 +1,6 @@
 import unittest
 
-from cache.shelvecache import ShelveCache
+from cache.dbcache import DBCache
 from config import Config
 from load.loader import Loader
 from chainmodel.ethereum_model import EthereumBlock
@@ -67,7 +67,7 @@ class TestChainModel0x123456(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         config = Config.from_files(['data/0x123456-tests.yaml'])
-        cls.loader = Loader([], ShelveCache(config))
+        cls.loader = Loader([], DBCache(config))
         cls.block = cls.loader.get_block(0x123456)
         cls.receipts = [cls.loader.get_transaction_receipt(transact.hash) for transact in cls.block.transactions]
 

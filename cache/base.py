@@ -9,7 +9,7 @@ class Cache(DataSource):
     """
 
     @abstractmethod
-    def add_block(self, block: Block, block_src: str):
+    def add_block(self, block: Block, block_dict: dict):
         pass
 
     @abstractmethod

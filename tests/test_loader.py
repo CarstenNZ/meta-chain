@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from cache.shelvecache import ShelveCache
+from cache.dbcache import DBCache
 from config import Config
 from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
@@ -17,10 +17,10 @@ class TestLoader(unittest.TestCase):
     def setUpClass(cls):
         config = Config.from_files(['~/meta-chain.yaml', '../meta-chain.yaml'])
         cls.loaders = {'ethereum.io': Loader([EtherscanIo(config)],
-                                             ShelveCache(None, explicit_path=cls.dbDirectory / 'eioCache.shelve',
-                                                         clear=True)),
+                                             DBCache(None, explicit_path=cls.dbDirectory / 'eioCache.cache.db',
+                                                     clear=True)),
                        'web3': Loader([WebThree(config)],
-                                      ShelveCache(None, explicit_path=cls.dbDirectory / 'webCache.shelve', clear=True))
+                                      DBCache(None, explicit_path=cls.dbDirectory / 'webCache.cache.db', clear=True))
                        }
 
     @classmethod
