@@ -5,7 +5,7 @@ import yaml
 
 from cache.base import Cache
 from cache.memcache import MemCache
-from chainmodel.base_model import Receipt, Block, Contract, Code
+from chainmodel.base_model import Receipt, Block, Code, Trace
 from chainmodel.ethereum_model import EthereumBlock, EthereumTransaction, EthereumReceipt
 from datasource.base import DataSource
 from load.loaderbase import LoaderBase
@@ -33,7 +33,8 @@ class Loader(LoaderBase):
         self.block_cls = EthereumBlock
         self.transaction_cls = EthereumTransaction
         self.receipt_cls = EthereumReceipt
-        self.code_cls = Contract
+        self.code_cls = Code
+        self.trace_cls = Trace
 
     def close(self):
         """ - only useful for testing
@@ -51,6 +52,9 @@ class Loader(LoaderBase):
 
     def get_code(self, contract_address) -> Code:
         return self.__get('code', self.code_cls, contract_address)
+
+    def get_trace(self, transaction_address) -> Trace:
+        return self.__get('transaction_trace', self.trace_cls, transaction_address)
 
     def _get_account_name(self, address) -> Optional[str]:
         return self.acc_names.get(address)

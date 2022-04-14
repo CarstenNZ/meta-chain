@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from cache.base import Cache
-from chainmodel.base_model import Block, Receipt, Contract, Code
+from chainmodel.base_model import Block, Receipt, Contract, Code, Trace
 from config import Config
 
 
@@ -48,6 +48,7 @@ class DBCache(Cache):
     _Block_Prefix = 'b'
     _Receipt_Prefix = 'r'
     _Code_Prefix = 'c'
+    _Trace_Prefix = 't'
 
     def __init__(self, config: Optional[Config], clear=False, explicit_path=None):
         """
@@ -94,6 +95,16 @@ class DBCache(Cache):
             return None, None
 
         return Code(contract_address, contract_src), contract_src
+
+    def add_transaction_trace(self, trace: Trace, trace_dict: dict):
+        self._db.add(self._Trace_Prefix + trace.address, json.dumps(trace_dict))
+
+    def get_transaction_trace(self, trace_cls, transaction_address):
+        trace_src = self._db.get(self._Trace_Prefix + transaction_address)
+        if trace_src is None:
+            return None, None
+
+        return trace_cls(transaction_address, json.loads(trace_src)), trace_src
 
     def close(self):
         if self._db:

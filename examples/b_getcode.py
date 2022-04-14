@@ -24,28 +24,20 @@ def main():
         # load block
         block = cast(EthereumBlock, loader.get_block(14_000_000))  # loaded from persistent cache or data source
         block.assert_()
-        # print(block.pretty(field_suppress=True))
+        print(block.pretty(field_suppress=True))
 
         for transact in block.transactions:
             receipt = loader.get_transaction_receipt(transact.hash)
             receipt.assert_()
-            # print(receipt.pretty(field_suppress=True))
+            print(receipt.pretty(field_suppress=True))
 
         # active accounts, sorted by cross-references
-        _accounts = sorted(Loader.all_accounts(), key=lambda a: -len(a.xref))
+        accounts = sorted(Loader.all_accounts(), key=lambda a: -len(a.xref))
+        print("\nAccounts\n\t" + "\n\t".join(f"{a.address}, xRefs {len(a.xref)}" for a in accounts))
 
-        codes = []
-        for transact in block.transactions:
-            if transact.is_contract_call:
-                c = loader.get_code(transact.to.address)
-                codes.append(c)
-
-        # x = loader.get_code('0x514910771AF9Ca656af840dff83E8264EcF986CA')
-        # b = Hex.is_hex_addr(x.address)
-        #
-        # print(x)
-        #
-        breakpoint()
+        # contract code
+        codes = [loader.get_code(transact.to.address) for transact in block.transactions if transact.is_contract_call]
+        print("\nContract codes\n\t" + "\n\t".join(f"{c.address}, len {len(c.bytes)}" for c in codes))
 
 
 if __name__ == '__main__':

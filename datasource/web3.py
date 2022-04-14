@@ -5,7 +5,6 @@ from hexbytes import HexBytes
 from web3 import Web3
 from web3.datastructures import AttributeDict
 
-from chainmodel.base_model import Code
 from config import Config
 from datasource.base import DataSource
 from std_format import Hex
@@ -23,7 +22,7 @@ class WebThree(DataSource):
         """
             - service_endpoint, e.g "https://mainnet.infura.io/v3/52754df7e5034e158acad0f5551e6eab"
         """
-        self.w3 = Web3(Web3.HTTPProvider(config.get_web3_endpoint()))
+        self.w3 = Web3(Web3.HTTPProvider(config.get_web3_endpoint(), request_kwargs={'timeout': 30}))
 
     def get_block(self, block_cls, block_number: int):
         block_src = self._convert_item(self.w3.eth.get_block(block_number, full_transactions=True))
@@ -35,7 +34,11 @@ class WebThree(DataSource):
 
     def get_code(self, code_cls, contract_address):
         code_bytes = self._convert_item(self.w3.eth.get_code(cast(HexStr, contract_address)))
-        return Code(contract_address, code_bytes), code_bytes
+        return code_cls(contract_address, code_bytes), code_bytes
+
+    def get_transaction_trace(self, trace_cls, transaction_address):
+        trace_str = self._convert_item(self.w3.manager.request_blocking('debug_traceTransaction', [transaction_address]))
+        return trace_cls(transaction_address, trace_str), trace_str
 
     def close(self):
         del self.w3

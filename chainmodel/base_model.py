@@ -142,6 +142,13 @@ class Code:
         self.bytes = bytearray.fromhex(code_bytes_str[2:])
 
 
+class Trace:
+    def __init__(self, transaction_address, trace_str):
+        assert Hex.is_hex(transaction_address)
+        self.address = transaction_address
+        self.trace = trace_str
+
+
 class EOAccount(ChainData):
     def __init__(self, address: str, name=None):
         assert Hex.is_hex_addr(address)
