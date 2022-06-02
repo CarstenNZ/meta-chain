@@ -33,7 +33,7 @@ class EthereumTransaction(Transaction):
                       'to': lambda self, *args: self._attr_ref_account(*args),  # can use override, e.g. EthereumTransaction
                       'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
                       'chainId': ChainData._attr_hex_to_int,
-                      'input': ChainData._attr_hex_string,
+                      'input': ChainData._attr_hex_to_bytes,
                       }
 
     _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}

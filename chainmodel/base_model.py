@@ -81,6 +81,10 @@ class ChainData:
     def _attr_hex_to_int(self, value, _fix_addresses):
         return Hex.hex_to_int(value)
 
+    def _attr_hex_to_bytes(self, value, _fix_addresses):
+        assert Hex.is_hex(value)
+        return bytearray.fromhex(value[2:])
+
     def __str__(self):
         return f"<{self.__class__.__name__}>"
 

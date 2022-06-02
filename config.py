@@ -38,5 +38,7 @@ class Config:
         node = self.tree
         for p in path:
             node = node.get(p, default)
+            if node is None:
+                return default
 
         return node
