@@ -11,16 +11,32 @@ class EtherscanIo(DataSource):
     Transaction_Converter = {
         'type': lambda v: v,
         'value': lambda v: int(v, 16),
+        'blockNumber': lambda v: int(v, 16),
+        'transactionIndex':  lambda v: int(v, 16),
+        'from': Hex.to_hex_addr,
+        'to': Hex.to_hex_addr,
     }
 
     Block_Converter = {
         'number': lambda v: int(v, 16),
         'totalDifficulty': lambda v: int(v, 16),
-        'transactions': lambda v: [EtherscanIo._fix_itemTypes(e, EtherscanIo.Transaction_Converter) for e in v]
+        'miner': Hex.to_hex_addr,
+        'transactions': lambda v: [EtherscanIo._fix_itemTypes(e, EtherscanIo.Transaction_Converter) for e in v],
     }
 
     Receipt_Converter = {
         'type': lambda v: v,
+        'blockNumber': lambda v: int(v, 16),
+        'transactionIndex': lambda v: int(v, 16),
+        'from': Hex.to_hex_addr,
+        'to': Hex.to_hex_addr,
+        'logs': lambda v: [EtherscanIo._fix_itemTypes(e, EtherscanIo.Log_Converter) for e in v]
+    }
+
+    Log_Converter= {
+        'blockNumber': lambda v: int(v, 16),
+        'transactionIndex': lambda v: int(v, 16),
+        'logIndex': lambda v: int(v, 16),
     }
 
     def __init__(self, config: Config):
@@ -33,15 +49,15 @@ class EtherscanIo(DataSource):
     def get_block(self, block_cls, block_number: int):
         data_dict = self.get('proxy', 'eth_getBlockByNumber', tag=hex(block_number), boolean='true')
         block_src = self._fix_itemTypes(data_dict, EtherscanIo.Block_Converter)
-        return block_cls(block_src, fix_addresses=True), block_src
+        return block_cls(block_src), block_src
 
     def get_transaction_receipt(self, receipt_cls, transaction_hash):
         data_dict = self.get('proxy', 'eth_getTransactionReceipt', txhash=transaction_hash)
         receipt_src = self._fix_itemTypes(data_dict, EtherscanIo.Receipt_Converter)
-        return receipt_cls(receipt_src, fix_addresses=True), receipt_src
+        return receipt_cls(receipt_src), receipt_src
 
     def get_code(self, code_cls, contract_address):
-        assert False, "not available"
+        assert False, "not available, implement https://docs.etherscan.io/api-endpoints/geth-parity-proxy#eth_getcode"
 
     def get(self, module, action, **kwargs) -> Dict:
         """ request module/action/**kwargs and return the result dict

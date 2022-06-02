@@ -4,7 +4,7 @@ from typing import cast
 from cache.dbcache import DBCache
 from chainmodel.ethereum_model import EthereumBlock
 from config import Config
-# from datasource.etherscan_io import EtherscanIo
+from datasource.etherscan_io import EtherscanIo
 from datasource.web3 import WebThree
 from load.loader import Loader
 

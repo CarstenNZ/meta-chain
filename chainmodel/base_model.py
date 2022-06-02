@@ -19,6 +19,7 @@ class ChainData:
         """
         for key, val in data_dict.items():
             # noinspection PyArgumentList,PyNoneFunctionAssignment
+            # TODO all fix_addresses should be done by the Web/EtherscanIo loader or fix_addresses has to be True for DB loader too
             val = self.__class__._Attr_Handlers.get(key, self.__class__._attr_default_handler)(self, val, fix_addresses)
             setattr(self, key, val)
 
