@@ -12,15 +12,14 @@ class ChainData:
     _Attr_Handlers = {}
     _Pretty_Suppress = set()
 
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         """ generic init crates instance attributes from dict items
             - 'Handler' class variable in derived classes can override this handling, e.g. create Transaction instances
               from the 'transaction' item
         """
         for key, val in data_dict.items():
             # noinspection PyArgumentList,PyNoneFunctionAssignment
-            # TODO all fix_addresses should be done by the Web/EtherscanIo loader or fix_addresses has to be True for DB loader too
-            val = self.__class__._Attr_Handlers.get(key, self.__class__._attr_default_handler)(self, val, fix_addresses)
+            val = self.__class__._Attr_Handlers.get(key, self.__class__._attr_default_handler)(self, val)
             setattr(self, key, val)
 
     def assert_(self) -> None:
@@ -63,26 +62,26 @@ class ChainData:
                                if field_suppress is False or k not in self._Pretty_Suppress)
         return f"{self}{new_line}{fields}"
 
-    def _attr_default_handler(self, value: Any, _fix_addresses):
+    def _attr_default_handler(self, value: Any):
         return value
 
-    def _attr_ref_account(self, address, fix_addresses):
+    def _attr_ref_account(self, address):
         """ get/create the account and adds a cross-reference from the account to self
             - this version assumes that the account is an EOA account
         """
-        acc = self._Account_Cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
-        return self._attr_default_handler(acc, fix_addresses)
+        acc = self._Account_Cls.add_xref(address, self)
+        return self._attr_default_handler(acc)
 
-    def _attr_hex_string(self, value, _fix_addresses):
+    def _attr_hex_string(self, value):
         if Hex.is_hex(value):
             return value if len(value) > 2 else ''
 
         assert False
 
-    def _attr_hex_to_int(self, value, _fix_addresses):
+    def _attr_hex_to_int(self, value):
         return Hex.hex_to_int(value)
 
-    def _attr_hex_to_bytes(self, value, _fix_addresses):
+    def _attr_hex_to_bytes(self, value):
         assert Hex.is_hex(value)
         return bytearray.fromhex(value[2:])
 
@@ -91,9 +90,9 @@ class ChainData:
 
 
 class Transaction(ChainData):
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         self.hash = ''
-        super().__init__(data_dict, fix_addresses)
+        super().__init__(data_dict)
 
     def get_receipt(self, loader=None):
         assert (loader or LoaderBase.Default_Loader), "needs explicit loader argument or active (default) Loader"
@@ -117,11 +116,11 @@ class Log(ChainData):
 
 
 class Receipt(ChainData):
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         self.transactionHash = None
         self.blockNumber = -1
         self.transactionIndex = -1
-        super().__init__(data_dict, fix_addresses)
+        super().__init__(data_dict)
 
     def assert_(self):
         assert self.transactionHash is not None and self.blockNumber >= 0 and self.transactionIndex >= 0
@@ -133,7 +132,7 @@ class Receipt(ChainData):
         return block.transactions[self.transactionIndex]
 
     # noinspection PyMethodMayBeStatic
-    def _attr_init_logs(self, val, _fix_addresses):
+    def _attr_init_logs(self, val):
         return [Log(d) for d in val]
 
     def __str__(self):
@@ -226,14 +225,14 @@ class Block(ChainData):
     _Transaction_Cls = Transaction
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         self.number = -1
         self.transactions: List[Transaction] = []
-        super().__init__(data_dict, fix_addresses=fix_addresses)
+        super().__init__(data_dict)
 
     # noinspection PyMethodMayBeStatic
-    def _attr_init_transactions(self, val, fix_addresses):
-        return [self._Transaction_Cls(d, fix_addresses) for d in val]
+    def _attr_init_transactions(self, val):
+        return [self._Transaction_Cls(d) for d in val]
 
     def __str__(self):
         return f"<{self.__class__.__name__} #{self.number:,}>"

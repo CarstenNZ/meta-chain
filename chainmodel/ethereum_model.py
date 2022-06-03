@@ -31,16 +31,16 @@ class EthereumTransaction(Transaction):
 
     _Attr_Handlers = {'from': ChainData._attr_ref_account,                      # uses default, always EOA account
                       'to': lambda self, *args: self._attr_ref_account(*args),  # can use override, e.g. EthereumTransaction
-                      'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
+                      'type': lambda s, v: EthereumTransactionType.from_type_field(v),
                       'chainId': ChainData._attr_hex_to_int,
                       'input': ChainData._attr_hex_to_bytes,
                       }
 
     _Pretty_Suppress = {'blockHash', 'hash', 'r', 's', 'v'}
 
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         self.input = ''
-        super().__init__(data_dict, fix_addresses)
+        super().__init__(data_dict)
 
     def assert_(self):
         super().assert_()
@@ -55,13 +55,13 @@ class EthereumTransaction(Transaction):
     # def is_contract_creation
     #     xxx
 
-    def _attr_ref_account(self, address, fix_addresses):
+    def _attr_ref_account(self, address):
         """ get/create the account and adds a cross-reference from the account to self
             - this version differentiates between contract and EOA accounts
         """
         cls = self._Contract_Cls if self.is_contract_call else self._Account_Cls
-        acc = cls.add_xref(Hex.to_hex_addr(address) if fix_addresses else address, self)
-        return self._attr_default_handler(acc, fix_addresses)
+        acc = cls.add_xref(address, self)
+        return self._attr_default_handler(acc)
 
 
 class EthereumLog(Log):
@@ -75,15 +75,15 @@ class EthereumReceipt(Receipt):
 
     _Attr_Handlers = {'from': ChainData._attr_ref_account,
                       'to': ChainData._attr_ref_account,
-                      'type': lambda s, v, _: EthereumTransactionType.from_type_field(v),
+                      'type': lambda s, v: EthereumTransactionType.from_type_field(v),
                       'logs': Receipt._attr_init_logs,
                       }
 
     _Pretty_Suppress = {'blockHash', 'logsBloom', 'transactionHash'}
 
-    def __init__(self, data_dict, fix_addresses=False):
+    def __init__(self, data_dict):
         self.logs = None
-        super().__init__(data_dict, fix_addresses)
+        super().__init__(data_dict)
 
     def assert_(self):
         super().assert_()
@@ -103,8 +103,8 @@ class EthereumBlock(Block):
     _Pretty_Suppress = {'hash', 'logsBloom', 'mixHash', 'parentHash', 'receiptsRoot', 'sha3Uncles', 'stateRoot',
                         'transactionsRoot'}
 
-    # def __init__(self, data_dict, fix_addresses=False):
-    #     super().__init__(data_dict, fix_addresses)
+    # def __init__(self, data_dict):
+    #     super().__init__(data_dict)
 
     def assert_(self):
         # noinspection PyArgumentList
